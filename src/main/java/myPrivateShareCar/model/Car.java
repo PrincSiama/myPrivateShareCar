@@ -1,46 +1,39 @@
 package myPrivateShareCar.model;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import java.util.Collection;
-import java.util.HashMap;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
+@RequiredArgsConstructor
+@Entity
+@Table(name = "cars")
 public class Car {
-    private String id;
-    @NotBlank
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String brand;
-    @NotBlank
     private String model;
-    @NotBlank
+    @Column(name = "year_of_manufacture")
     private Integer yearOfManufacture;
     private String color;
-    @NotBlank
+    @Column(name = "document_number")
     private String documentNumber;
-    @NotBlank
-    @Pattern(regexp = "^[А]$",
-            message = "Некорректный формат номера")
+    @Column(name = "registration_number")
+    //@Pattern(regexp = "^(?ui:[АВЕКМНОРСТУХ])\\d{3}(?<!000)(?ui:[АВЕКМНОРСТУХ]){2}\\d{2,3}$")
+    /*@Pattern(regexp = "^(?ui:[АВЕКМНОРСТУХ])\\d{3}(?<!000)(?ui:[АВЕКМНОРСТУХ]){2}\\d{2,3}$",
+            message = "Некорректный формат номера")*/
     private String registrationNumber;
-    private double pricePerDay; // добавить в будущем динамическое ценообразование
-    private String ownerId;
-    private final Map<String, List<String>> reviews = new HashMap<>(); // <id пользователя, отзыв> // создать объект review и добавить список объектов
+    @Column(name = "owner_id")
+    private Integer ownerId;
+    @Column(name = "price_per_day")
+    private int pricePerDay; // добавить в будущем динамическое ценообразование
+    @OneToMany
+    @JoinColumn(name = "car_id")
+    private final List<Review> reviews = new ArrayList<>();
     //private int rentCounter = 0; // счетчик количества аренд
-
-    public void addReview(String userId, String review) {
-        if (reviews.containsKey(userId)) {
-            reviews.get(userId).add(review);
-        } else {
-            reviews.put(userId, List.of(review));
-        }
-    }
-
-    public Collection<List<String>> getReviewByCar() {
-        return reviews.values();
-    }
-
 
 }

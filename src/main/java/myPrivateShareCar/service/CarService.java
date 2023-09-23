@@ -2,15 +2,18 @@ package myPrivateShareCar.service;
 
 import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.dto.GetCarDto;
+import myPrivateShareCar.dto.GetReviewDto;
 import myPrivateShareCar.model.Car;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface CarService {
-    Car create(String ownerId, CreateCarDto createCarDto);
-    void delete(String ownerId, String id);
-    GetCarDto getById(String id);
-    Collection<Car> getOwnerCars(String id);
-    Collection<Car> getAll();
-    Collection<Car> find(String text);
+    Car create(Integer ownerId, CreateCarDto createCarDto);
+    void delete(Integer ownerId, Integer id);
+    GetCarDto getById(Integer id);
+    List<Car> getOwnerCars(Integer id);
+    List<Car> getAll();
+    List<Car> find(String text);
+    void addReview(Integer carId, Integer userId, String text);
+    List<GetReviewDto> getReviewByCar(Integer carId);
 }

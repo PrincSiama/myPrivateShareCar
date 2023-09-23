@@ -6,7 +6,7 @@ import myPrivateShareCar.model.User;
 
 public interface UserService {
     User create(CreateUserDto createUserDto);
-    User update(String id, UpdateUserDto updateUserDto);
-    void delete(String id);
-    User getById(String id);
+    User update(Integer id, UpdateUserDto updateUserDto);
+    void delete(Integer id);
+    User getById(Integer id);
 }

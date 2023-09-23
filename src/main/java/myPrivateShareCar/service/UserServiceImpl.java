@@ -3,69 +3,55 @@ package myPrivateShareCar.service;
 import lombok.RequiredArgsConstructor;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UpdateUserDto;
-import myPrivateShareCar.exception.AlreadyExistException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.model.User;
-import myPrivateShareCar.repository.UserRepository;
+import myPrivateShareCar.repository.JpaUserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+    private final JpaUserRepository userRepository;
     private final ModelMapper mapper;
 
     @Override
     public User create(CreateUserDto createUserDto) {
-        if (!userRepository.isExistEmail(createUserDto.getEmail())
-                && !userRepository.isExistPassport(createUserDto.getNumberPassport())) {
-            User user = mapper.map(createUserDto, User.class);
-            return userRepository.create(user);
-        }
-        throw new AlreadyExistException("Невозможно создать пользователя. Пользователь с такими данными уже существует");
+        User user = mapper.map(createUserDto, User.class);
+        user.setRegistrationDate(LocalDate.now());
+        return userRepository.save(user);
     }
 
     @Override
-    public User update(String id, UpdateUserDto updateUserDto) { // json-patch
-        if (userRepository.isCorrect(id)) {
-            User oldUser = getById(id);
+    public User update(Integer id, UpdateUserDto updateUserDto) { // json-patch
+        if (userRepository.existsById(id)) {
+            User oldUser = userRepository.findById(id).get();
             User user = mapper.map(updateUserDto, User.class);
             user.setId(oldUser.getId());
+            user.setEmail(oldUser.getEmail());
+            user.setBirthday(oldUser.getBirthday());
             user.setRegistrationDate(oldUser.getRegistrationDate());
-            return userRepository.update(user);
+            return userRepository.save(user);
         }
         throw new NotFoundException("Невозможно обновить пользователя. Пользователь с id "
                 + id + " не найден");
     }
 
     @Override
-    public void delete(String id) {
-        if (userRepository.isCorrect(id)) {
-            userRepository.delete(id);
+    public void delete(Integer id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
         } else {
             throw new NotFoundException("Невозможно удалить пользователя. Пользователь с id " + id + " не найден");
         }
     }
 
     @Override
-    public User getById(String id) {
-        if (userRepository.isCorrect(id)) {
-            return userRepository.getById(id);
-        }
-        throw new NotFoundException("Невозможно получить пользователя. Пользователь с id " + id + " не найден");
+    public User getById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Невозможно получить пользователя. Пользователь с id " + id + " не найден"));
     }
 
-    /*@Override
-    public User getByEmail(String email) {
-        if (userRepository.isExist(email)) {
-            return userRepository.getByEmail(email);
-        }
-        throw new NotFoundException("Невозможно получить пользователя. Пользователь с email " + email + " не найден");
-    }*/
-
-    /*@Override
-    public Collection<User> getAll() {
-        return userRepository.getAll();
-    }*/
 }

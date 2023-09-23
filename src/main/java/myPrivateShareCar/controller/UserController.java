@@ -21,29 +21,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User update(@PathVariable String id,
+    public User update(@PathVariable Integer id,
                        @RequestBody @Valid UpdateUserDto updateUserDto) {
         return userService.update(id, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        userService.delete(id); // todo при удалении владельца удалять авто
+    public void delete(@PathVariable Integer id) {
+        userService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable String id) {
+    public User getById(@PathVariable Integer id) {
         return userService.getById(id);
     }
-
-    /*@GetMapping("/email={email}")
-    public User getByEmail(@PathVariable String email) {
-        return userService.getByEmail(email);
-    }
-
-    @GetMapping
-    public Collection<User> getAll() {
-        return userService.getAll();
-    }*/
 
 }
