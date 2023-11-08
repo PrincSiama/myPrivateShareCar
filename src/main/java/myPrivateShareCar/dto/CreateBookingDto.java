@@ -3,16 +3,16 @@ package myPrivateShareCar.dto;
 import lombok.Data;
 
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @Data
 public class CreateBookingDto {
-    @NotNull
-    private Integer carId;
+    @Positive
+    private int carId;
     @FutureOrPresent
     private LocalDate startRent;
-    @NotNull
-    private Integer durationRent;
+    @Positive
+    private int durationRentInDays;
 
 }

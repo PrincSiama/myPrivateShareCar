@@ -5,13 +5,10 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class UpdateUserDto {
+public class UserDto {
     private int id;
     private String firstname;
     private String lastname;
     private String email;
-    private LocalDate birthday;
-    private PassportDto passport;
-    private DriverLicenseDto driverLicense;
     private LocalDate registrationDate;
 }

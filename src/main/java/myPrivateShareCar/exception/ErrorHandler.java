@@ -1,6 +1,5 @@
 package myPrivateShareCar.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleAlreadyExistException(AlreadyExistException e) {
+    public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e) {
         e.printStackTrace();
         return new ErrorResponse("Объект существует", e.getMessage());
     }
@@ -25,18 +24,22 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNotOwnerException(NotOwnerException e) {
+    public ErrorResponse handlePermissionDeniedException(PermissionDeniedException e) {
         e.printStackTrace();
         return new ErrorResponse("Ошибка доступа", e.getMessage());
     }
 
-    @ExceptionHandler
+    /*@ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    // REVIEW: нужно убедиться, что это исключение генерируется только тогда, когда нарушено условие уникальности.
+    // Кажется, что могут быть ещё другие ситуации. Если да, то обсудим, что делать
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         e.printStackTrace();
         return new ErrorResponse("Нарушено условие уникальности. Пользователь с указанными данным уже существует",
                 e.getMessage());
-    }
+        //e.getRootCause();
+    }*/
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -44,6 +47,20 @@ public class ErrorHandler {
         e.printStackTrace();
         return new ErrorResponse("Нарушено условие валидации. " +
                 "Указанные данные не соответствуют требованиям валидации", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotCreateException(NotCreateException e) {
+        e.printStackTrace();
+        return new ErrorResponse("Невозможно создать. ", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUpdateException(UpdateException e) {
+        e.printStackTrace();
+        return new ErrorResponse("Невозможно обновить. ", e.getMessage());
     }
 
     @ExceptionHandler

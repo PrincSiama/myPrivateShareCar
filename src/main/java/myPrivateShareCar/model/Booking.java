@@ -15,27 +15,33 @@ import java.time.LocalDate;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name = "user_id")
-    private Integer userId;
-    @Column(name = "car_id")
-    private Integer carId;
+    private int id;
+    /*@Column(name = "user_id")
+    private int userId;*/
+    @ManyToOne(optional = false)
+    @JoinColumn(name="user_id")
+    private User user;
+    @ManyToOne(optional = false)
+    @JoinColumn(name="car_id")
+    private Car car;
+    /*@Column(name = "car_id")
+    private int carId;*/
     @Column(name = "start_rent")
     private LocalDate startRent;
     @Column(name = "duration")
-    private Integer durationRent;
+    private int durationRentInDays;
     @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
     @Column(name = "end_rent")
-    private LocalDate endRent; //startRent.plus(durationRent);
+    private LocalDate endRent;
 
-    public Booking(Integer userId, Integer carId, LocalDate startRent, Integer durationRent) {
-        this.userId = userId;
-        this.carId = carId;
+    public Booking(User user, Car car, LocalDate startRent, int durationRentInDays, LocalDate endRent) {
+        this.user = user;
+        this.car = car;
         this.startRent = startRent;
-        this.durationRent = durationRent;
+        this.durationRentInDays = durationRentInDays;
         this.bookingStatus = BookingStatus.WAITING;
-        this.endRent = startRent.plusDays(durationRent);
+        this.endRent = endRent;
     }
 }

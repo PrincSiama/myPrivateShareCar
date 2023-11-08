@@ -1,65 +1,70 @@
 package myPrivateShareCar.controller;
 
 import lombok.RequiredArgsConstructor;
-import myPrivateShareCar.dto.AddReviewDto;
+import myPrivateShareCar.dto.CarDto;
 import myPrivateShareCar.dto.CreateCarDto;
-import myPrivateShareCar.dto.GetCarDto;
-import myPrivateShareCar.dto.GetReviewDto;
+import myPrivateShareCar.dto.PriceDto;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cars")
 public class CarController {
-
+    @Autowired
     private final CarService carService;
 
     @PostMapping
     public Car create(@RequestBody @Valid CreateCarDto createCarDto,
-                      @RequestHeader(value = "X-Owner-Id") Integer ownerId) {
+                      @RequestHeader(value = "X-Owner-Id") int ownerId) {
         return carService.create(ownerId, createCarDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id,
-                       @RequestHeader(value = "X-Owner-Id") Integer ownerId) {
-        carService.delete(ownerId, id);
+    @DeleteMapping("/{carId}")
+    public void delete(@PathVariable int carId,
+                       @RequestHeader(value = "X-Owner-Id") int ownerId) {
+        carService.delete(ownerId, carId);
     }
 
-    @GetMapping("/{id}")
-    public GetCarDto getById(@PathVariable Integer id) {
-        return carService.getById(id);
+    @GetMapping("/{carId}")
+    public CarDto getById(@PathVariable int carId) {
+        return carService.getById(carId);
     }
 
     @GetMapping
-    public List<Car> getCars(@RequestHeader(value = "X-Owner-Id", required = false) Integer ownerId) {
-        if (ownerId != null) {
-            return carService.getOwnerCars(ownerId);
-        } else {
-            return carService.getAll();
-        }
+    public List<CarDto> getOwnerCars(@RequestHeader(value = "X-Owner-Id") int ownerId,
+                                     @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                     @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        return carService.getOwnerCars(ownerId, page, size);
     }
 
-    @GetMapping("/search")
-    public List<Car> find(@RequestParam("text") String findText) {
-        return carService.find(findText);
+    // todo без параметров - все машины, в параметрах поиск по тексту и/или датам
+    // паттерн спецификация
+
+    @GetMapping("/search") //?page={page} ?size={size}
+    public List<CarDto> search(@RequestParam(value = "text", required = false) String findText,
+                               @RequestParam(value = "startRent", required = false)
+                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startRent,
+                               @RequestParam(value = "endRent", required = false)
+                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endRent,
+                               @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                               @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        return carService.search(findText, startRent, endRent, page, size);
     }
 
-    @PostMapping ("/review/{id}/")
-    public void addReview(@PathVariable Integer id,
-                          @RequestHeader(value = "X-User-Id") Integer userId,
-                          @RequestBody AddReviewDto addReviewDto) {
-        carService.addReview(id, userId, addReviewDto.getText());
-    }
-
-    @GetMapping("/review/{id}")
-    public List<GetReviewDto> getReviewByCar(@PathVariable Integer id) {
-        return carService.getReviewByCar(id);
+    // todo цену передаем в теле, сделать PriceDto +
+    @PutMapping("/{carId}")
+    public void updatePrice(@RequestBody @Valid PriceDto priceDto,
+                            @PathVariable int carId,
+                            @RequestHeader(value = "X-Owner-Id") int ownerId) {
+        carService.updatePrice(carId, ownerId, priceDto.getPricePerDay());
     }
 
 }

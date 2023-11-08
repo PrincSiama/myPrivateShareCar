@@ -1,10 +1,12 @@
 package myPrivateShareCar.controller;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import lombok.RequiredArgsConstructor;
 import myPrivateShareCar.dto.CreateUserDto;
-import myPrivateShareCar.dto.UpdateUserDto;
+import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,6 +15,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
+    @Autowired
     private final UserService userService;
 
     @PostMapping
@@ -20,19 +23,19 @@ public class UserController {
         return userService.create(createUserDto);
     }
 
-    @PutMapping("/{id}")
-    public User update(@PathVariable Integer id,
-                       @RequestBody @Valid UpdateUserDto updateUserDto) {
-        return userService.update(id, updateUserDto);
+    @PatchMapping("/{id}")
+    public User update(@PathVariable int id,
+                       @RequestBody @Valid JsonPatch jsonPatch) {
+        return userService.update(id, jsonPatch);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable int id) {
         userService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Integer id) {
+    public UserDto getById(@PathVariable int id) {
         return userService.getById(id);
     }
 

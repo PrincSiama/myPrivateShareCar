@@ -1,19 +1,23 @@
 package myPrivateShareCar.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateCarDto {
     @NotBlank
     private String brand;
     @NotBlank
     private String model;
-    @NotNull
-    private Integer yearOfManufacture;
+    @Min(1900)
+    private int yearOfManufacture;
     private String color;
     @NotBlank
     private String documentNumber;

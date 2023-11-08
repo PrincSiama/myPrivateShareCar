@@ -1,12 +1,17 @@
 package myPrivateShareCar.service;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import myPrivateShareCar.dto.CreateUserDto;
-import myPrivateShareCar.dto.UpdateUserDto;
+import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.model.User;
 
 public interface UserService {
     User create(CreateUserDto createUserDto);
-    User update(Integer id, UpdateUserDto updateUserDto);
-    void delete(Integer id);
-    User getById(Integer id);
+
+    //    User update(int id, UpdateUserDto updateUserDto);
+    User update(int id, JsonPatch jsonPatch);
+
+    void delete(int id);
+
+    UserDto getById(int id);
 }
