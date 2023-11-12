@@ -3,12 +3,13 @@ package myPrivateShareCar.repository;
 import myPrivateShareCar.model.Booking;
 import myPrivateShareCar.model.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface BookingRepository extends JpaRepository<Booking, Integer> {
+public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaSpecificationExecutor<Booking> {
     // User_Id
     List<Booking> findByUser_IdOrderByStartRentAsc(int userId);
 

@@ -2,6 +2,7 @@ package myPrivateShareCar.service;
 
 import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.model.Car;
+import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,22 +26,25 @@ class CarServiceImplTest {
     private CarRepository carRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private BookingRepository bookingRepository;
 
     @BeforeEach
     public void setUp() {
-        carService = new CarServiceImpl(carRepository, userRepository, new ModelMapper());
+        carService = new CarServiceImpl(carRepository, userRepository, bookingRepository, new ModelMapper());
     }
 
     @Test
-    void create() {
+    void createCarTest() {
+        int ownerId = 55;
         when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
                 2019, "white", "2201 887900", "А001АА155");
         Car testCar = new ModelMapper().map(createCarDto, Car.class);
+        testCar.setOwnerId(ownerId);
 
         when(carRepository.save(Mockito.any(Car.class))).thenReturn(testCar);
 
-        int ownerId = 1;
         Car car = carService.create(ownerId, createCarDto);
 
         verify(carRepository).save(Mockito.any(Car.class));

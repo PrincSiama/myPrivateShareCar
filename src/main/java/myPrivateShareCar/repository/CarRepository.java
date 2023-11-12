@@ -30,7 +30,7 @@ public interface CarRepository extends JpaRepository<Car, Integer>, JpaSpecifica
             " or lower(c.model) like lower(concat('%', :text, '%'))" +
             " or lower(c.color) like lower(concat('%', :text, '%')))" +
             " and c.id not in (" +
-            "select c from Car c left join Booking b on c.id = b.car.id" +
+            "select b.car.id from Booking b" +
             " where b.bookingStatus = 'APPROVED' and" +
             " ((:startRent <= b.endRent and :endRent >= b.startRent)" +
             " or (:startRent between b.startRent and b.endRent and :endRent between b.startRent and b.endRent))))")

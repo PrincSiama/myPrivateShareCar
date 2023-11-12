@@ -6,7 +6,10 @@ import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.exception.NotCreateException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
+import myPrivateShareCar.model.Booking;
+import myPrivateShareCar.model.BookingStatus;
 import myPrivateShareCar.model.Car;
+import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -14,20 +17,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
 public class CarServiceImpl implements CarService {
-    private CarRepository carRepository;
-    private UserRepository userRepository;
-    private ModelMapper mapper;
+    private final CarRepository carRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final ModelMapper mapper;
 
     // REVIEW: кажется, что работу с отзывами лучше вынести в отдельный сервис. Для меня зависимость car-service от
     // booking репозитория выглядит нелогично. Как будто бы связь должна быть в другую сторону: бронирование зависит
@@ -112,51 +114,57 @@ public class CarServiceImpl implements CarService {
                 .collect(Collectors.toList());
     }
 
-    private Specification<Car> textInBrand(String text) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(
-                root.get("brand")), "%" + text.toLowerCase() + "%");
+    private Specification<Car> findText(String text) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.or(
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("brand")), "%" + text.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("model")), "%" + text.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("color")), "%" + text.toLowerCase() + "%"));
     }
 
-    private Specification<Car> textInModel(String text) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(
-                root.get("model")), "%" + text.toLowerCase() + "%");
+    /*private Specification<Booking> findBookingByDate(LocalDate startRent, LocalDate endRent) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.and(
+                criteriaBuilder.equal(root.get("bookingStatus"), BookingStatus.APPROVED),
+                criteriaBuilder.or(criteriaBuilder.and(
+                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent),
+                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent)),
+                        criteriaBuilder.and(
+                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), startRent),
+                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent),
+                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent),
+                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), endRent)
+                        ))
+        ));
+    }*/
+
+    private Specification<Booking> findBookingByDate(LocalDate startRent, LocalDate endRent) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.and(
+                criteriaBuilder.equal(root.get("bookingStatus"), BookingStatus.APPROVED),
+                criteriaBuilder.or(
+                        criteriaBuilder.and(
+                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent),
+                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent)),
+                        criteriaBuilder.and(
+                                criteriaBuilder.and(
+                                        criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), startRent),
+                                        criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent)),
+                                criteriaBuilder.and(
+                                        criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent),
+                                        criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), endRent))))));
     }
 
-    private Specification<Car> textInColor(String text) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(
-                root.get("color")), "%" + text.toLowerCase() + "%");
-    }
-
-    // todo поиск по тексту работает, с датами проблема, не могу сджойнить
-    private Specification<Car> startRent(LocalDate startRent) {
-
-        return (new Specification<Car>() {
-            @Override
-            public Predicate toPredicate(Root<Car> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-
-//                Join<Car, Booking>  carBookingJoin = root.join();
-
-                return criteriaBuilder.not(criteriaBuilder.greaterThanOrEqualTo(
-                        root.join("car_id", JoinType.LEFT), startRent));
-            }
-        });
-    }
-
-    private Specification<Car> endRent(LocalDate endRent) {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.not(criteriaBuilder.lessThanOrEqualTo(
-                root.join("car_id", JoinType.LEFT), endRent)));
+    // todo где-то здесь проблема
+    private Specification<Car> rentDate(LocalDate startRent, LocalDate endRent) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.not(root.get("id")
+                .in(bookingRepository.findAll(findBookingByDate(startRent, endRent))
+                        .stream().map(booking -> booking.getCar().getId()).collect(Collectors.toList())));
     }
 
     private List<Specification<Car>> searchParametersToSpecifications(String text,
                                                                       LocalDate startRent, LocalDate endRent) {
         List<Specification<Car>> specifications = new ArrayList<>();
-        if (text != null) {
-            Specification<Car> findIn = Stream.of(textInBrand(text), textInModel(text), textInColor(text))
-                    .reduce(Specification::or).get();
-            specifications.add(findIn);
-        }
-        specifications.add(startRent == null ? null : startRent(startRent));
-        specifications.add(endRent == null ? null : endRent(endRent));
+
+        specifications.add(text == null ? null : findText(text));
+        specifications.add((startRent == null && endRent == null) ? null : rentDate(startRent, endRent));
 
         return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
