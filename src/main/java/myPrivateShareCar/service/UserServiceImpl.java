@@ -36,27 +36,14 @@ public class UserServiceImpl implements UserService {
     public User update(int id, JsonPatch jsonPatch) {
         UpdateUserDto updateUserDto = mapper.map(userRepository.findById(id).orElseThrow(() -> new NotFoundException("Невозможно обновить" +
                 " пользователя. Пользователь с id " + id + " не найден")), UpdateUserDto.class);
-        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-try {
-        JsonNode jsonNode = objectMapper.convertValue(updateUserDto, JsonNode.class);
-        // todo отловить ошибки через errorHandler
-
-    //  todo после первой строки выпадает в ошибку и не продолжает следующие строки. Отдельно работает.
-/*[
-    {"op": "add", "path": "/driverLicense", "value": {}},
-    {"op": "replace", "path": "/driverLicense/series", "value": "5678"},
-    {"op": "replace", "path": "/driverLicense/number", "value": "567890"},
-    {"op": "replace", "path": "/driverLicense/dateOfIssue", "value": "2015-05-05"},
-    {"op": "replace", "path": "/driverLicense/issuedBy", "value": "ГАИ 5555"}
-]*/
-
-
-        JsonNode patched = jsonPatch.apply(jsonNode);
-        User updateUser = objectMapper.treeToValue(patched, User.class);
-        return userRepository.save(updateUser);
-} catch (JsonPatchException | JsonProcessingException e) {
-    throw new UpdateException("Невозможно обновить данные пользователя", e);
-}
+        try {
+            JsonNode jsonNode = objectMapper.convertValue(updateUserDto, JsonNode.class);
+            JsonNode patched = jsonPatch.apply(jsonNode);
+            User updateUser = objectMapper.treeToValue(patched, User.class);
+            return userRepository.save(updateUser);
+        } catch (JsonPatchException | JsonProcessingException e) {
+            throw new UpdateException("Невозможно обновить данные пользователя", e);
+        }
     }
 
     @Override

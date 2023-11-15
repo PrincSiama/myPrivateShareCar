@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaSpecificationExecutor<Booking> {
-    // User_Id
     List<Booking> findByUser_IdOrderByStartRentAsc(int userId);
 
     List<Booking> findAllByUser_IdAndBookingStatusOrderByStartRentAsc(int userId, BookingStatus bookingStatus);

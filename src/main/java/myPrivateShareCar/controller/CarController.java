@@ -45,9 +45,6 @@ public class CarController {
         return carService.getOwnerCars(ownerId, page, size);
     }
 
-    // todo без параметров - все машины, в параметрах поиск по тексту и/или датам
-    // паттерн спецификация
-
     @GetMapping("/search") //?page={page} ?size={size}
     public List<CarDto> search(@RequestParam(value = "text", required = false) String findText,
                                @RequestParam(value = "startRent", required = false)
@@ -59,7 +56,6 @@ public class CarController {
         return carService.search(findText, startRent, endRent, page, size);
     }
 
-    // todo цену передаем в теле, сделать PriceDto +
     @PutMapping("/{carId}")
     public void updatePrice(@RequestBody @Valid PriceDto priceDto,
                             @PathVariable int carId,

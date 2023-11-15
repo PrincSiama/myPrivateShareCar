@@ -1,10 +1,13 @@
 package myPrivateShareCar.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -29,16 +32,16 @@ public class ErrorHandler {
         return new ErrorResponse("Ошибка доступа", e.getMessage());
     }
 
-    /*@ExceptionHandler
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     // REVIEW: нужно убедиться, что это исключение генерируется только тогда, когда нарушено условие уникальности.
     // Кажется, что могут быть ещё другие ситуации. Если да, то обсудим, что делать
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         e.printStackTrace();
         return new ErrorResponse("Нарушено условие уникальности. Пользователь с указанными данным уже существует",
-                e.getMessage());
+                Objects.requireNonNull(e.getRootCause()).getMessage());
         //e.getRootCause();
-    }*/
+    }
 
 
     @ExceptionHandler

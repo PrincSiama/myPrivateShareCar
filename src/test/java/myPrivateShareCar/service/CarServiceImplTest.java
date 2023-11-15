@@ -1,6 +1,7 @@
 package myPrivateShareCar.service;
 
 import myPrivateShareCar.dto.CreateCarDto;
+import myPrivateShareCar.exception.NotCreateException;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
@@ -13,10 +14,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {
@@ -35,7 +37,7 @@ class CarServiceImplTest {
     }
 
     @Test
-    void createCarTest() {
+    void createCar() {
         int ownerId = 55;
         when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
@@ -60,7 +62,35 @@ class CarServiceImplTest {
     }
 
     @Test
-    void delete() {
+    void createCarWithNotExistUser() {
+        int ownerId = 55;
+        when(userRepository.existsById(Mockito.anyInt())).thenReturn(false);
+        CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
+                2019, "white", "2201 887900", "А001АА155");
+
+        assertThrows(NotCreateException.class, () -> {
+            carService.create(ownerId, createCarDto);
+        });
+
+        verify(userRepository).existsById(Mockito.any(Integer.class));
+    }
+
+    @Test
+    void deleteCar() {
+        int ownerId = 55;
+        int customCarId = 10;
+        Car car = new Car(customCarId, "BMW", "530", 2019, "white",
+                "2201 887900", "А001АА155", ownerId, 5000, new ArrayList<>());
+
+        when(carRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(car));
+
+        // todo разобраться, почему ошибка. Интежер не подходит
+        doNothing().when(carRepository.deleteById(customCarId));
+
+        carService.delete(ownerId, customCarId);
+
+        verify(carRepository).findById(Mockito.any(Integer.class));
+        verify(carRepository).deleteById(Mockito.any(Integer.class));
     }
 
     @Test

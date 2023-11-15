@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
+    //todo исключить bookingRepository
     private final BookingRepository bookingRepository;
     private final ModelMapper mapper;
 
