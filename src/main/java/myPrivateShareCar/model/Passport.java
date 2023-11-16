@@ -41,5 +41,10 @@ public class Passport {
     @Column(name = "issued_by")
     private String issuedBy;
 
-
+    public Passport(String series, String number, LocalDate dateOfIssue, String issuedBy) {
+        this.series = series;
+        this.number = number;
+        this.dateOfIssue = dateOfIssue;
+        this.issuedBy = issuedBy;
+    }
 }

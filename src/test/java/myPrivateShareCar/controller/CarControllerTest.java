@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
@@ -15,7 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,8 +34,10 @@ class CarControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    @DisplayName("Корректное создание автомобиля")
     void createCarTest() throws Exception {
-        CreateCarDto request = new CreateCarDto("Volvo", "S80", 2018, "black", "8080 123456", "В080ВВ80");
+        CreateCarDto request = new CreateCarDto("Volvo", "S80", 2018, "black",
+                "8080 123456", "В080ВВ80");
         int customId = 10;
         when(carService.create(Mockito.anyInt(), Mockito.any(CreateCarDto.class)))
                 .thenAnswer(invocationOnMock -> {
@@ -59,7 +64,24 @@ class CarControllerTest {
                 .andExpect(jsonPath("registrationNumber").value(request.getRegistrationNumber()))
                 .andExpect(jsonPath("pricePerDay").value(0))
                 .andExpect(jsonPath("reviews").isEmpty());
+    }
 
+    @Test
+    @DisplayName("Корректное удаление автомобиля")
+    void deleteCarTest() throws Exception {
+        int customCarId = 5;
+        int customOwnerId = 10;
+
+        doNothing().when(carService).delete(Mockito.anyInt(), Mockito.anyInt());
+
+        mvc.perform(delete("/cars/" + customCarId)
+                        .content(objectMapper.writeValueAsString(customCarId))
+                        .header("X-Owner-Id", customOwnerId)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
     }
+
 }

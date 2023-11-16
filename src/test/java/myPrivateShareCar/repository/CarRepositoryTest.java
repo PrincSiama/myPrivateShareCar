@@ -2,6 +2,7 @@ package myPrivateShareCar.repository;
 
 import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.model.Car;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ class CarRepositoryTest {
     private final ModelMapper mapper = new ModelMapper();
 
     @Test
-    void testFindByOwnerId() {
+    @DisplayName("Поиск автомобиля по id владельца")
+    public void findByOwnerIdTest() {
         int testOwnerId = 5;
         CreateCarDto createCarDto1 = new CreateCarDto("BMW", "530",
                 2019, "white", "1277 507800", "А111АА147");
@@ -49,7 +51,8 @@ class CarRepositoryTest {
     }
 
     @Test
-    void testFindByOwnerIdWithTwoCar() {
+    @DisplayName("Поиск автомобилей по id владельца")
+    public void testFindByOwnerIdWithTwoCar() {
         int ownerId = 5;
         CreateCarDto createCarDto1 = new CreateCarDto("BMW", "530",
                 2019, "white", "1277 507800", "А111АА147");
@@ -77,9 +80,9 @@ class CarRepositoryTest {
         assertTrue(emptyList.isEmpty());
     }
 
-// если реализовать поиск с помощью спецификации, то эти методы не нужны и тестировать их не надо?
+    // если реализовать поиск с помощью спецификации, то эти методы не нужны и тестировать их не надо?
     @Test
-    void findAllContainingText() {
+    public void findAllContainingText() {
         int ownerId = 5;
         CreateCarDto createCarDto1 = new CreateCarDto("BMW", "530",
                 2019, "white", "1277 507800", "А111АА147");
@@ -104,14 +107,6 @@ class CarRepositoryTest {
 
         List<Car> emptyList = carRepository.findAllContainingText("mercedes", Pageable.unpaged());
         assertTrue(emptyList.isEmpty());
-    }
-
-    @Test
-    void carsByRentDate() {
-    }
-
-    @Test
-    void carsByRentDateAndContainingText() {
     }
 
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UpdateUserDto;
 import myPrivateShareCar.dto.UserDto;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
@@ -34,8 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(int id, JsonPatch jsonPatch) {
-        UpdateUserDto updateUserDto = mapper.map(userRepository.findById(id).orElseThrow(() -> new NotFoundException("Невозможно обновить" +
-                " пользователя. Пользователь с id " + id + " не найден")), UpdateUserDto.class);
+        UpdateUserDto updateUserDto = mapper.map(userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Невозможно обновить" + " пользователя. Пользователь с id " + id + " не найден")),
+                UpdateUserDto.class);
         try {
             JsonNode jsonNode = objectMapper.convertValue(updateUserDto, JsonNode.class);
             JsonNode patched = jsonPatch.apply(jsonNode);

@@ -1,5 +1,6 @@
 package myPrivateShareCar.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import myPrivateShareCar.model.Passport;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class CreateUserDto {
     @NotBlank
     private String firstname;
