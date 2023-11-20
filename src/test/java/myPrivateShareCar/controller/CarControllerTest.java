@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = CarController.class)
 class CarControllerTest {
-
     @MockBean
     private CarService carService;
     @Autowired
@@ -38,24 +37,24 @@ class CarControllerTest {
     void createCarTest() throws Exception {
         CreateCarDto request = new CreateCarDto("Volvo", "S80", 2018, "black",
                 "8080 123456", "В080ВВ80");
-        int customId = 10;
+        int customCarId = 10;
         when(carService.create(Mockito.anyInt(), Mockito.any(CreateCarDto.class)))
                 .thenAnswer(invocationOnMock -> {
                     CreateCarDto createCarDto = invocationOnMock.getArgument(1, CreateCarDto.class);
                     Car car = mapper.map(createCarDto, Car.class);
-                    car.setId(customId);
+                    car.setId(customCarId);
                     car.setOwnerId(invocationOnMock.getArgument(0, Integer.class));
                     return car;
                 });
 
         mvc.perform(post("/cars")
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-Owner-Id", customId)
+                        .header("X-Owner-Id", customCarId)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(customId))
+                .andExpect(jsonPath("$.id").value(customCarId))
                 .andExpect(jsonPath("brand").value(request.getBrand()))
                 .andExpect(jsonPath("model").value(request.getModel()))
                 .andExpect(jsonPath("yearOfManufacture").value(request.getYearOfManufacture()))
@@ -64,6 +63,28 @@ class CarControllerTest {
                 .andExpect(jsonPath("registrationNumber").value(request.getRegistrationNumber()))
                 .andExpect(jsonPath("pricePerDay").value(0))
                 .andExpect(jsonPath("reviews").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Создание автомобиля с невалидными данными")
+    void createCarTestWithNotValidDataTest() throws Exception {
+        CreateCarDto request = new CreateCarDto("Volvo", "S80", 2018, "black",
+                "8080 123456", "Ц1Й4");
+        int customId = 10;
+
+        mvc.perform(post("/cars")
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("X-Owner-Id", customId)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+//                todo нужно проверить, что возникает ошибка при валидации данных
+//                .andExpect(result -> {
+//                    assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException);
+//                })
+    ;
+
     }
 
     @Test
