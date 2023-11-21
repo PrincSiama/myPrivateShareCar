@@ -1,10 +1,11 @@
 package myPrivateShareCar.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,13 +32,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private UserService userService;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private UserRepository userRepository;
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, new ModelMapper(), new ObjectMapper());
+        userService = new UserServiceImpl(userRepository, new ModelMapper(), objectMapper);
     }
 
     @Test
@@ -66,27 +68,31 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Корректное обновление пользователя")
     public void updateTest() {
+        objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
         User testUser = new ModelMapper().map(createUserDto, User.class);
         testUser.setRegistrationDate(LocalDate.now());
+        int userId = testUser.getId();
 
         when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));
 
 //        JsonPatch jsonPatch = { "op": "replace", "path": "/firstname", "value": "Пётр"};
 
-        JsonPatch jsonPatch = null;
         User updateUser;
         try {
-            JsonNode jsonNode = objectMapper.convertValue(createUserDto, JsonNode.class);
-            JsonNode patched = jsonPatch.apply(jsonNode);
-            updateUser = objectMapper.treeToValue(patched, User.class);
-        } catch (JsonPatchException | JsonProcessingException e) {
+            JsonPatch jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
+                    new TextNode("Пётр"))));
+            updateUser = userService.update(userId, jsonPatch);
+//            JsonNode jsonNode = objectMapper.convertValue(createUserDto, JsonNode.class);
+//            JsonNode patched = jsonPatch.apply(jsonNode);
+//            updateUser = objectMapper.treeToValue(patched, User.class);
+        } catch (JsonPointerException e) {
             throw new UpdateException("Невозможно обновить данные пользователя", e);
         }
 
-        when(userRepository.save(Mockito.any(User.class))).thenReturn(updateUser);
+//        when(userRepository.save(Mockito.any(User.class))).thenReturn(updateUser);
     }
 
     @Test
@@ -152,6 +158,8 @@ class UserServiceImplTest {
                 new NotFoundException("Невозможно получить пользователя. Пользователь с id "
                         + customUserId + " не найден"));
 
-        assertThrows(NotFoundException.class, () -> userService.getById(customUserId));
+        assertThrows(NotFoundException.class, () -> {
+            userService.getById(customUserId);
+        });
     }
 }

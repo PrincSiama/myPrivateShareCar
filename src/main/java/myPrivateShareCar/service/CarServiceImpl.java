@@ -155,8 +155,8 @@ public class CarServiceImpl implements CarService {
 
     // todo где-то здесь проблема
     private Specification<Car> rentDate(LocalDate startRent, LocalDate endRent) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.not(root.get("id")
-                .in(bookingRepository.findAll(findBookingByDate(startRent, endRent))
+        return (root, query, criteriaBuilder) -> criteriaBuilder.not(criteriaBuilder.in(root.get("id"))
+                .value(bookingRepository.findAll(findBookingByDate(startRent, endRent))
                         .stream().map(booking -> booking.getCar().getId()).collect(Collectors.toList())));
     }
 
