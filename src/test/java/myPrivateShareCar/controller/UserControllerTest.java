@@ -2,6 +2,7 @@ package myPrivateShareCar.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import myPrivateShareCar.dto.CreateUserDto;
+import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.service.UserService;
@@ -14,11 +15,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,21 +87,54 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
 //                todo нужно проверить, что возникает ошибка при валидации данных
+                .andExpect(jsonPath("$.error")
+                        .value("Нарушено условие валидации." +
+                                " Указанные данные не соответствуют требованиям валидации"));
 //                .andExpect(result -> {
 //                    assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException);
-//                })
-                ;
+//                });
+
     }
 
     @Test
     void update() {
+        // todo как написать jsonPatch?
     }
 
     @Test
-    void delete() {
+    @DisplayName("Корректное удаление пользователя")
+    void deleteUserTest() throws Exception {
+        int customUserId = 14;
+
+        doNothing().when(userService).delete(Mockito.anyInt());
+
+        mvc.perform(MockMvcRequestBuilders.delete("/users/" + customUserId)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        verify(userService, times(1)).delete(Mockito.anyInt());
     }
 
     @Test
-    void getById() {
+    @DisplayName("Корректное получение пользователя по id")
+    void getUserByIdTest() throws Exception {
+        int customUserId = 28;
+
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"));
+
+        UserDto userDto = new ModelMapper().map(createUserDto, UserDto.class);
+        userDto.setId(customUserId);
+
+        when(userService.getById(Mockito.anyInt())).thenReturn(userDto);
+
+        mvc.perform(get("/users/" + customUserId)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        verify(userService, times(1)).getById(Mockito.anyInt());
     }
 }

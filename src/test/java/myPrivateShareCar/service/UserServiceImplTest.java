@@ -41,7 +41,7 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("Корректное создание пользователя")
-    public void createTest() {
+    public void createUserTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
@@ -97,9 +97,7 @@ class UserServiceImplTest {
                 new NotFoundException("Невозможно обновить пользователя. Пользователь с id "
                         + customUserId + " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.update(customUserId, null);
-        });
+        assertThrows(NotFoundException.class, () -> userService.update(customUserId, null));
     }
 
     @Test
@@ -121,9 +119,7 @@ class UserServiceImplTest {
         when(userRepository.existsById(Mockito.anyInt())).thenThrow(
                 new NotFoundException("Невозможно удалить пользователя. Пользователь с id " + customUserId + " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.delete(customUserId);
-        });
+        assertThrows(NotFoundException.class, () -> userService.delete(customUserId));
 
         verify(userRepository, never()).deleteById(Mockito.anyInt());
     }
@@ -156,8 +152,6 @@ class UserServiceImplTest {
                 new NotFoundException("Невозможно получить пользователя. Пользователь с id "
                         + customUserId + " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.getById(customUserId);
-        });
+        assertThrows(NotFoundException.class, () -> userService.getById(customUserId));
     }
 }
