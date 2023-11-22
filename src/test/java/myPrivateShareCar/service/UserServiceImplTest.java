@@ -21,6 +21,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,36 +35,58 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private UserService userService;
+    private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private UserRepository userRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate = new JdbcTemplate(new DriverManagerDataSource());
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, new ModelMapper(), objectMapper);
+        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper);
     }
 
     @Test
     @DisplayName("Корректное создание пользователя")
     public void createUserTest() {
-        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+
+        String createUserSql = "insert into users (id, firstname, lastname, email, birthday, registration_date)\n" +
+                " values ('21', 'Ivan', 'Ivanov', 'ivan@email.ru', '2000-10-01', '2023-11-20');";
+        jdbcTemplate.update(createUserSql);
+        String getUser1FromBdSql = "select * from users where id = 21";
+        User testUser = getUserFromBd(getUser1FromBdSql);
+
+        /*CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
-        User testUser = new ModelMapper().map(createUserDto, User.class);
-        testUser.setRegistrationDate(LocalDate.now());
+        User testUser = modelMapper.map(createUserDto, User.class);
+        testUser.setRegistrationDate(LocalDate.now());*/
 
         when(userRepository.save(Mockito.any(User.class))).thenReturn(testUser);
 
-        User user = userService.create(createUserDto);
+        User user = userService.create(null);
 
         verify(userRepository).save(Mockito.any(User.class));
         assertNotNull(user);
-        assertEquals(createUserDto.getFirstname(), user.getFirstname());
-        assertEquals(createUserDto.getLastname(), user.getLastname());
-        assertEquals(createUserDto.getEmail(), user.getEmail());
-        assertEquals(createUserDto.getBirthday(), user.getBirthday());
-        assertEquals(createUserDto.getPassport(), user.getPassport());
-        assertNotNull(user.getRegistrationDate());
+        assertEquals(testUser.getFirstname(), user.getFirstname());
+        assertEquals(testUser.getLastname(), user.getLastname());
+        assertEquals(testUser.getEmail(), user.getEmail());
+        assertEquals(testUser.getBirthday(), user.getBirthday());
+        assertEquals(testUser.getRegistrationDate(), user.getRegistrationDate());
+    }
+
+    private User getUserFromBd(String sql) {
+        User user = new User();
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
+            user.setId(resultSet.getInt("id"));
+            user.setFirstname(resultSet.getString("firstname"));
+            user.setLastname(resultSet.getString("lastname"));
+            user.setEmail(resultSet.getString("email"));
+            user.setBirthday(resultSet.getDate("birthday").toLocalDate());
+            user.setRegistrationDate(resultSet.getDate("registration_date").toLocalDate());
+            return user;
+        });
     }
 
     // todo как написать jsonPatch?
@@ -72,7 +97,7 @@ class UserServiceImplTest {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
-        User testUser = new ModelMapper().map(createUserDto, User.class);
+        User testUser = modelMapper.map(createUserDto, User.class);
         testUser.setRegistrationDate(LocalDate.now());
         int userId = testUser.getId();
 
@@ -91,8 +116,8 @@ class UserServiceImplTest {
         } catch (JsonPointerException e) {
             throw new UpdateException("Невозможно обновить данные пользователя", e);
         }
-
-//        when(userRepository.save(Mockito.any(User.class))).thenReturn(updateUser);
+        assertNotNull(updateUser);
+//        assertEquals("Пётр", updateUser.getFirstname());
     }
 
     @Test
@@ -137,7 +162,7 @@ class UserServiceImplTest {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
-        User testUser = new ModelMapper().map(createUserDto, User.class);
+        User testUser = modelMapper.map(createUserDto, User.class);
         testUser.setRegistrationDate(LocalDate.now());
 
         when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));

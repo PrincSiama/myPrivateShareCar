@@ -33,10 +33,11 @@ class CarServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private BookingRepository bookingRepository;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
     public void setUp() {
-        carService = new CarServiceImpl(carRepository, userRepository, bookingRepository, new ModelMapper());
+        carService = new CarServiceImpl(carRepository, userRepository, bookingRepository, modelMapper);
     }
 
     @Test
@@ -46,7 +47,7 @@ class CarServiceImplTest {
         when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
                 2019, "white", "2201 887900", "А001АА155");
-        Car testCar = new ModelMapper().map(createCarDto, Car.class);
+        Car testCar = modelMapper.map(createCarDto, Car.class);
         testCar.setOwnerId(ownerId);
 
         when(carRepository.save(Mockito.any(Car.class))).thenReturn(testCar);
