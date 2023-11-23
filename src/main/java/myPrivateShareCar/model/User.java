@@ -20,7 +20,7 @@ public class User {
     private LocalDate birthday;
 
     @PrimaryKeyJoinColumn
-    @OneToOne(/*optional = false,*/ mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Passport passport;
 
     @PrimaryKeyJoinColumn
