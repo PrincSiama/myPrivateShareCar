@@ -34,8 +34,6 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    // REVIEW: нужно убедиться, что это исключение генерируется только тогда, когда нарушено условие уникальности.
-    // Кажется, что могут быть ещё другие ситуации. Если да, то обсудим, что делать
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         e.printStackTrace();
         return new ErrorResponse("Нарушено условие уникальности. Пользователь с указанными данным уже существует",

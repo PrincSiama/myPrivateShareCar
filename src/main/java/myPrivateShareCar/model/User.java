@@ -30,9 +30,13 @@ public class User {
     @Column(name = "registration_date")
     private LocalDate registrationDate;
 
+
+
     public void setPassport(Passport passport) {
-        this.passport = passport;
-        this.passport.setUser(this);
+        if (passport != null) {
+            this.passport = passport;
+            this.passport.setUser(this);
+        }
     }
 
     public void setDriverLicense(DriverLicense driverLicense) {

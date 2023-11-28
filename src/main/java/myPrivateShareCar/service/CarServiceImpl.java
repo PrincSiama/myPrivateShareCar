@@ -32,11 +32,6 @@ public class CarServiceImpl implements CarService {
     private final BookingRepository bookingRepository;
     private final ModelMapper mapper;
 
-    // REVIEW: кажется, что работу с отзывами лучше вынести в отдельный сервис. Для меня зависимость car-service от
-    // booking репозитория выглядит нелогично. Как будто бы связь должна быть в другую сторону: бронирование зависит
-    // от машины, но не наоборот
-
-
     @Override
     public Car create(int ownerId, CreateCarDto createCarDto) {
         if (userRepository.existsById(ownerId)) {
@@ -81,30 +76,6 @@ public class CarServiceImpl implements CarService {
                 + ownerId + " не найден");
     }
 
-    /*@Override
-    public List<CarDto> find(String text, int page, int size) {
-        return carRepository.findAllContainingText(text, PageRequest.of(page, size)).stream()
-                .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
-    }*/
-
-    /*@Override
-    public List<CarDto> search(String text, LocalDate startRent, LocalDate endRent, int page, int size) {
-        if (text != null && startRent == null && endRent == null) {
-            return carRepository.findAllContainingText(text, PageRequest.of(page, size)).stream()
-                    .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
-        } else if (text == null && startRent != null && endRent != null) {
-            return carRepository.carsByRentDate(startRent, endRent, PageRequest.of(page, size)).stream()
-                    .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
-        } else if (text != null && startRent != null && endRent != null) {
-            return carRepository.carsByRentDateAndContainingText(text, startRent, endRent,
-                            PageRequest.of(page, size)).stream()
-                    .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
-        } else {
-            return carRepository.findAll().stream()
-                    .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
-        }
-    }*/
-
     @Override
     public List<CarDto> search(String text, LocalDate startRent, LocalDate endRent, int page, int size) {
         List<Specification<Car>> specifications = searchParametersToSpecifications(text, startRent, endRent);
@@ -121,21 +92,6 @@ public class CarServiceImpl implements CarService {
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("model")), "%" + text.toLowerCase() + "%"),
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("color")), "%" + text.toLowerCase() + "%"));
     }
-
-    /*private Specification<Booking> findBookingByDate(LocalDate startRent, LocalDate endRent) {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.equal(root.get("bookingStatus"), BookingStatus.APPROVED),
-                criteriaBuilder.or(criteriaBuilder.and(
-                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent),
-                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent)),
-                        criteriaBuilder.and(
-                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), startRent),
-                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), startRent),
-                                criteriaBuilder.lessThanOrEqualTo(root.get("startRent"), endRent),
-                                criteriaBuilder.greaterThanOrEqualTo(root.get("endRent"), endRent)
-                        ))
-        ));
-    }*/
 
     private Specification<Booking> findBookingByDate(LocalDate startRent, LocalDate endRent) {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.and(
@@ -154,6 +110,8 @@ public class CarServiceImpl implements CarService {
     }
 
     // todo где-то здесь проблема
+    //  приходит пустой список при запросе с датами, когда обе машины свободны
+    //  но если выбирать даты когда одна машина занята, то вторая машина возвращается в списке правильно
     private Specification<Car> rentDate(LocalDate startRent, LocalDate endRent) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.not(criteriaBuilder.in(root.get("id"))
                 .value(bookingRepository.findAll(findBookingByDate(startRent, endRent))

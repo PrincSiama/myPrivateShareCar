@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @JdbcTest
+@Sql("/schemaForTest.sql")
 class UserServiceImplTest {
     private UserService userService;
     private final ModelMapper modelMapper = new ModelMapper();
@@ -85,18 +87,18 @@ class UserServiceImplTest {
         String createUserSql = "insert into users (id, firstname, lastname, email, birthday, registration_date)\n" +
                 " values (?, 'Ivan', 'Ivanov', 'ivan@email.ru', '2000-10-01', '2023-11-20')";
         jdbcTemplate.update(createUserSql, customUserId);
-        /*String createPassportSql =
+        String createPassportSql =
                 "insert into passport (id, passport_series, passport_number, date_of_issue, issued_by)" +
                         " values (?, '1234', '123456', '2011-6-15', 'МВД №1')";
-        jdbcTemplate.update(createPassportSql, customUserId);*/
+        jdbcTemplate.update(createPassportSql, customUserId);
 
         String getUserFromBdSql = "select * from users where id = ?";
 //        String getUserWithPassportSql = "select * from users u left join passport p on u.id = p.id where u.id = ?";
         User testUser = getUserFromBd(getUserFromBdSql, customUserId);
-        testUser.setPassport(new Passport());
+//        testUser.setPassport(new Passport());
 //        User testUser = getUserFromBd(getUserWithPassportSql, customUserId);
-        /*testUser.setPassport(new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));*/
+//        testUser.setPassport(new Passport("1234", "123456",
+//                LocalDate.of(2014, 5, 15), "МВД №1"));
 
 
        /* CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
