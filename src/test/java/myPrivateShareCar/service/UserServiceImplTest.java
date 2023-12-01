@@ -1,10 +1,13 @@
 package myPrivateShareCar.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
@@ -93,17 +96,7 @@ class UserServiceImplTest {
         jdbcTemplate.update(createPassportSql, customUserId);
 
         String getUserFromBdSql = "select * from users where id = ?";
-//        String getUserWithPassportSql = "select * from users u left join passport p on u.id = p.id where u.id = ?";
         User testUser = getUserFromBd(getUserFromBdSql, customUserId);
-//        testUser.setPassport(new Passport());
-//        User testUser = getUserFromBd(getUserWithPassportSql, customUserId);
-//        testUser.setPassport(new Passport("1234", "123456",
-//                LocalDate.of(2014, 5, 15), "МВД №1"));
-
-
-       /* CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
-                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));*/
 
         when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));
 
@@ -111,8 +104,15 @@ class UserServiceImplTest {
         try {
             JsonPatch jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
                     new TextNode("Пётр"))));
+
+            JsonNode jsonNode = objectMapper.convertValue(testUser, JsonNode.class);
+            JsonNode patched = jsonPatch.apply(jsonNode);
+            User returnUser = objectMapper.treeToValue(patched, User.class);
+
+            when(userRepository.save(Mockito.any(User.class))).thenReturn(returnUser);
+
             updateUser = userService.update(customUserId, jsonPatch);
-        } catch (JsonPointerException e) {
+        } catch (JsonPointerException | JsonPatchException | JsonProcessingException e) {
             throw new UpdateException("Невозможно обновить данные пользователя", e);
         }
         assertNotNull(updateUser);

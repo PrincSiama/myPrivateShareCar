@@ -35,6 +35,9 @@ class CarServiceImplIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        // REVIEW: в интеграционных тестах не нужно создавать классы сервисом самостоятельно. Их должен через Autowired
+        // подставить спринг. И моки как правило тоже не используются, они нужны для юнит тестов. А здесь наша задача
+        // протестировать всё вместе с базой данных.
         carService = new CarServiceImpl(carRepository, userRepository, bookingRepository, new ModelMapper());
     }
 

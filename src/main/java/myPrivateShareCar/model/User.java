@@ -14,6 +14,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private int id;
 
+    // REVIEW: стиль лучше соблюдать и между всеми полями оставлять пустую строчку
     private String firstname;
     private String lastname;
     private String email;
@@ -32,6 +33,7 @@ public class User {
 
 
 
+    // REVIEW: эти два метода сейчас не используются, они точно нужны?
     public void setPassport(Passport passport) {
         if (passport != null) {
             this.passport = passport;

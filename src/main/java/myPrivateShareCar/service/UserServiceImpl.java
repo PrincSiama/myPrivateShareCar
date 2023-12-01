@@ -7,7 +7,6 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.CreateUserDto;
-import myPrivateShareCar.dto.UpdateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.UpdateException;
@@ -34,11 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(int id, JsonPatch jsonPatch) {
-        UpdateUserDto updateUserDto = mapper.map(userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Невозможно обновить" + " пользователя. Пользователь с id " + id + " не найден")),
-                UpdateUserDto.class);
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Невозможно обновить" + " пользователя. Пользователь с id " + id + " не найден"));
         try {
-            JsonNode jsonNode = objectMapper.convertValue(updateUserDto, JsonNode.class);
+            JsonNode jsonNode = objectMapper.convertValue(user, JsonNode.class);
             JsonNode patched = jsonPatch.apply(jsonNode);
             User updateUser = objectMapper.treeToValue(patched, User.class);
             return userRepository.save(updateUser);

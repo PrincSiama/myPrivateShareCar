@@ -1,3 +1,4 @@
+-- эту схему нужно положить в resources из тестов и назвать schema.sql
 drop table if exists users cascade;
 drop table if exists cars cascade;
 drop table if exists review cascade;

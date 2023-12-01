@@ -11,6 +11,7 @@ import java.util.List;
 public interface CarRepository extends JpaRepository<Car, Integer>, JpaSpecificationExecutor<Car> {
     List<Car> findByOwnerId(int ownerId, Pageable pageable);
 
+    // REVIEW: этот метод нигде, кроме тестов, не используется. Точно нужен?
     @Query("select c from Car c where" +
             " lower(c.brand) like lower(concat('%', :text, '%'))" +
             " or lower(c.model) like lower(concat('%', :text, '%'))" +

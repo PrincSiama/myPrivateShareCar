@@ -3,6 +3,8 @@ package myPrivateShareCar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// REVIEW: по всему проекту закомментированный код нужно удалить. Например, в классе Booking или в ErrorHandler.
+// И в pom.xml
 @SpringBootApplication
 public class MyPrivateShareCarApplication {
 

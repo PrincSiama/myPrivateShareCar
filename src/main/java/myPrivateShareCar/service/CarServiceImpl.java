@@ -86,6 +86,7 @@ public class CarServiceImpl implements CarService {
                 .collect(Collectors.toList());
     }
 
+    // REVIEW: я бы все методы со спецификацией вынесла бы в отдельный класс
     private Specification<Car> findText(String text) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.or(
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("brand")), "%" + text.toLowerCase() + "%"),
@@ -130,6 +131,7 @@ public class CarServiceImpl implements CarService {
 
 
     @Override
+    // REVIEW: пустая строка лишняя
 
     public void updatePrice(int carId, int ownerId, int pricePerDay) {
         Car car = carRepository.findById(carId)

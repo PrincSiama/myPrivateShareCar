@@ -47,6 +47,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    // REVIEW: а тут же может быть передан любой статус, не только APPROVE? В сообщениях к исключениям речь только
+    // про подтверждение. Я бы "подтвердить" заменила на "изменить статус"
     public BookingDto updateStatus(int ownerId, int bookingId, BookingStatus status) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
@@ -97,6 +99,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getOwnerBookings(int ownerId, BookingStatus status) {
         List<Booking> bookings;
         if (userRepository.existsById(ownerId)) {
+            // REVIEW: 0 и 5 здесь смотрятся странно. Возможно, тебе подойдет Pageable.unpaged()
             if (!carRepository.findByOwnerId(ownerId, PageRequest.of(0, 5)).isEmpty()) {
                 if (status == null) {
                     bookings = bookingRepository.findByOwnerId(ownerId);

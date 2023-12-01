@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/cars")
 public class CarController {
+    // REVIEW: в некоторых контроллерах есть аннотация @Autowired над сервисом, а в некоторых нет. Нужно единообразие
     @Autowired
     private final CarService carService;
 

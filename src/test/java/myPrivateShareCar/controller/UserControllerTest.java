@@ -86,14 +86,9 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-//                todo нужно проверить, что возникает ошибка при валидации данных
                 .andExpect(jsonPath("$.error")
                         .value("Нарушено условие валидации." +
                                 " Указанные данные не соответствуют требованиям валидации"));
-//                .andExpect(result -> {
-//                    assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException);
-//                });
-
     }
 
     @Test
