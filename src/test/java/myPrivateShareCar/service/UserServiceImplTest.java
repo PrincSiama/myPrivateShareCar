@@ -25,10 +25,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,8 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@JdbcTest
-@Sql("/schemaForTest.sql")
 class UserServiceImplTest {
     private UserService userService;
     private final ModelMapper modelMapper = new ModelMapper();
@@ -57,16 +53,12 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Корректное создание пользователя")
     public void createUserTest() {
-        int customUserId = 21;
-        String createUserSql = "insert into users (id, firstname, lastname, email, birthday, registration_date)\n" +
-                " values (?, 'Ivan', 'Ivanov', 'ivan@email.ru', '2000-10-01', '2023-11-20')";
-        jdbcTemplate.update(createUserSql, customUserId);
-        String getUserFromBdSql = "select * from users where id = ?";
-        User testUser = getUserFromBd(getUserFromBdSql, customUserId);
-
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
+
+        User testUser = modelMapper.map(createUserDto, User.class);
+        testUser.setRegistrationDate(LocalDate.now());
 
         when(userRepository.save(Mockito.any(User.class))).thenReturn(testUser);
 
@@ -81,22 +73,19 @@ class UserServiceImplTest {
         assertEquals(testUser.getRegistrationDate(), user.getRegistrationDate());
     }
 
-    // todo как написать jsonPatch?
     @Test
     @DisplayName("Корректное обновление пользователя")
     public void updateUserTest() {
         objectMapper.findAndRegisterModules();
         int customUserId = 22;
-        String createUserSql = "insert into users (id, firstname, lastname, email, birthday, registration_date)\n" +
-                " values (?, 'Ivan', 'Ivanov', 'ivan@email.ru', '2000-10-01', '2023-11-20')";
-        jdbcTemplate.update(createUserSql, customUserId);
-        String createPassportSql =
-                "insert into passport (id, passport_series, passport_number, date_of_issue, issued_by)" +
-                        " values (?, '1234', '123456', '2011-6-15', 'МВД №1')";
-        jdbcTemplate.update(createPassportSql, customUserId);
 
-        String getUserFromBdSql = "select * from users where id = ?";
-        User testUser = getUserFromBd(getUserFromBdSql, customUserId);
+        User testUser = new User();
+        testUser.setId(customUserId);
+        testUser.setFirstname("Ivan");
+        testUser.setLastname("Ivanov");
+        testUser.setEmail("ivan@email.ru");
+        testUser.setBirthday(LocalDate.of(2000, 10, 1));
+        testUser.setRegistrationDate(LocalDate.of(2023, 11, 20));
 
         when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));
 
@@ -117,6 +106,7 @@ class UserServiceImplTest {
         }
         assertNotNull(updateUser);
         assertEquals("Пётр", updateUser.getFirstname());
+        assertEquals("ivan@email.ru", updateUser.getEmail());
     }
 
     @Test
@@ -186,37 +176,4 @@ class UserServiceImplTest {
             userService.getById(customUserId);
         });
     }
-
-    private User getUserFromBd(String sql, int userId) {
-        User user = new User();
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-            user.setId(resultSet.getInt("id"));
-            user.setFirstname(resultSet.getString("firstname"));
-            user.setLastname(resultSet.getString("lastname"));
-            user.setEmail(resultSet.getString("email"));
-            user.setBirthday(resultSet.getDate("birthday").toLocalDate());
-            user.setRegistrationDate(resultSet.getDate("registration_date").toLocalDate());
-            return user;
-        }, userId);
-    }
-
-    /*private User getUserFromBd(String sql, int userId) {
-        User user = new User();
-        Passport passport = new Passport();
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> {
-            user.setId(resultSet.getInt("id"));
-            user.setFirstname(resultSet.getString("firstname"));
-            user.setLastname(resultSet.getString("lastname"));
-            user.setEmail(resultSet.getString("email"));
-            user.setBirthday(resultSet.getDate("birthday").toLocalDate());
-            user.setRegistrationDate(resultSet.getDate("registration_date").toLocalDate());
-            passport.setId(resultSet.getInt("id"));
-            passport.setSeries(resultSet.getString("passport_series"));
-            passport.setNumber(resultSet.getString("passport_number"));
-            passport.setDateOfIssue(resultSet.getDate("date_of_issue").toLocalDate());
-            passport.setIssuedBy(resultSet.getString("issued_by"));
-            user.setPassport(passport);
-            return user;
-        }, userId);
-    }*/
 }

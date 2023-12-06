@@ -6,7 +6,6 @@ import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.dto.PriceDto;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/cars")
 public class CarController {
-    // REVIEW: в некоторых контроллерах есть аннотация @Autowired над сервисом, а в некоторых нет. Нужно единообразие
-    @Autowired
     private final CarService carService;
 
     @PostMapping
@@ -46,7 +43,7 @@ public class CarController {
         return carService.getOwnerCars(ownerId, page, size);
     }
 
-    @GetMapping("/search") //?page={page} ?size={size}
+    @GetMapping("/search")
     public List<CarDto> search(@RequestParam(value = "text", required = false) String findText,
                                @RequestParam(value = "startRent", required = false)
                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startRent,

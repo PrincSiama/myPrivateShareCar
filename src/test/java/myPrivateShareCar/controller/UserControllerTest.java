@@ -92,6 +92,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Корректное обновление пользователя")
     void update() {
         // todo как написать jsonPatch?
     }

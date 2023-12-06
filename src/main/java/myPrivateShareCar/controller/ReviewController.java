@@ -12,7 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/cars/{carId}/review")
 public class ReviewController {
-
     private final ReviewService reviewService;
 
     @PostMapping

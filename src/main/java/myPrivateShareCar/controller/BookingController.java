@@ -14,20 +14,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/booking")
 public class BookingController {
-
     private final BookingService bookingService;
 
     @PostMapping
     public BookingDto create(@RequestBody @Valid CreateBookingDto createBookingDto,
-                          @RequestHeader(value = "X-User-Id") int userId) {
+                             @RequestHeader(value = "X-User-Id") int userId) {
         return bookingService.create(userId, createBookingDto.getCarId(),
                 createBookingDto.getStartRent(), createBookingDto.getDurationRentInDays());
     }
 
-    @PutMapping("/{bookingId}") //?status={status}
+    @PutMapping("/{bookingId}")
     public BookingDto updateStatus(@PathVariable int bookingId,
-                                @RequestParam BookingStatus status,
-                                @RequestHeader(value = "X-Owner-Id") int ownerId) {
+                                   @RequestParam BookingStatus status,
+                                   @RequestHeader(value = "X-Owner-Id") int ownerId) {
         return bookingService.updateStatus(ownerId, bookingId, status);
     }
 
@@ -43,7 +42,7 @@ public class BookingController {
         return bookingService.getUserBookings(userId, status);
     }
 
-    @GetMapping("/owner") //?status={status}
+    @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(@RequestHeader(value = "X-Owner-Id") int ownerId,
                                              @RequestParam(value = "status", required = false) BookingStatus status) {
         return bookingService.getOwnerBookings(ownerId, status);

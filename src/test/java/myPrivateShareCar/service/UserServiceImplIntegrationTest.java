@@ -1,9 +1,15 @@
 package myPrivateShareCar.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
+import myPrivateShareCar.exception.UpdateException;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
@@ -16,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,10 +31,12 @@ class UserServiceImplIntegrationTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, new ModelMapper(), new ObjectMapper());
+        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper);
     }
 
     @Test
@@ -45,8 +54,27 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
+    @DisplayName("Корректное обновление пользователя")
     void update() {
-        // todo как написать jsonPatch?
+        objectMapper.findAndRegisterModules();
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"));
+        User testUser = userService.create(createUserDto);
+        int userId = testUser.getId();
+        JsonPatch jsonPatch;
+        try {
+            jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
+                    new TextNode("Пётр"))));
+        } catch (JsonPointerException e) {
+            throw new UpdateException("Невозможно обновить данные пользователя", e);
+        }
+        User user = userService.update(userId, jsonPatch);
+
+        assertNotNull(user);
+        assertNotNull(user.getRegistrationDate());
+        assertEquals(userId, user.getId());
+        assertEquals(createUserDto.getEmail(), user.getEmail());
     }
 
     @Test
