@@ -14,21 +14,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
 
     List<Booking> findAllByUser_IdAndBookingStatusOrderByStartRentAsc(int userId, BookingStatus bookingStatus);
 
-    // REVIEW: findAllByCar_OwnerIdOrderByStartRentAsc не подойдет? вместо Query
-    @Query("select b from Booking b left join Car c on b.car.id = c.id" +
-            " where c.ownerId = ?1 order by b.startRent asc")
-    List<Booking> findByOwnerId(int userId);
+    List<Booking> findAllByCar_OwnerIdOrderByStartRentAsc(int ownerId);
 
-    // REVIEW: аналогично предыдущему. Кажется, можно запросный метод сделать
-    @Query("select b from Booking b left join Car c on b.car.id = c.id" +
-            " where c.ownerId = ?1 and b.bookingStatus = ?2 order by b.startRent asc")
-    List<Booking> findByOwnerIdAndStatus(int userId, BookingStatus bookingStatus);
+    List<Booking> findAllByCar_OwnerIdAndBookingStatusOrderByStartRentAsc(int ownerId, BookingStatus bookingStatus);
 
-    // REVIEW: я бы статусы передала в метод (на случай, если в коде переименуется, а тут можно забыть). И тогда
-    // можно сделать запросный метод
-    @Query("select b from Booking b" +
-            " where b.user.id = ?1 and b.car.id = ?2 and (b.bookingStatus = 'APPROVED' or b.bookingStatus = 'FINISHED')")
-    List<Booking> findByUserIdAndCarIdAndApprovedAndFinishedStatus(int userId, int carId);
+    List<Booking> findAllByUserIdAndCarIdAndBookingStatusOrBookingStatus(int userId, int carId,
+                                                                         BookingStatus bookingStatusApproved,
+                                                                         BookingStatus bookingStatusFinished);
 
     @Query("select b from Booking b" +
             " where b.car.id = ?1 and b.bookingStatus = 'APPROVED' and" +

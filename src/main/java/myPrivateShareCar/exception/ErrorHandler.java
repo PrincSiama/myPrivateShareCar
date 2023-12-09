@@ -38,7 +38,6 @@ public class ErrorHandler {
         e.printStackTrace();
         return new ErrorResponse("Нарушено условие уникальности. Пользователь с указанными данным уже существует",
                 Objects.requireNonNull(e.getRootCause()).getMessage());
-        //e.getRootCause();
     }
 
 
@@ -52,14 +51,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNotCreateException(NotCreateException e) {
+    public ErrorResponse handleNotCreateException(NotCreatedException e) {
         e.printStackTrace();
         return new ErrorResponse("Невозможно создать. ", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUpdateException(UpdateException e) {
+    public ErrorResponse handleUpdateException(NotUpdatedException e) {
         e.printStackTrace();
         return new ErrorResponse("Невозможно обновить. ", e.getMessage());
     }
@@ -70,7 +69,4 @@ public class ErrorHandler {
         e.printStackTrace();
         return new ErrorResponse("Внутренняя ошибка сервера", e.getMessage());
     }
-
-    // DataIntegrityViolationException
-    // MethodArgumentNotValidException
 }

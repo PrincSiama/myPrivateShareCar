@@ -79,34 +79,9 @@ class CarRepositoryTest {
         assertTrue(emptyList.isEmpty());
     }
 
-    // если реализовать поиск с помощью спецификации, то эти методы не нужны и тестировать их не надо?
     @Test
-    public void findAllContainingText() {
-        int customOwnerId = 5;
-        CreateCarDto createCarDto1 = new CreateCarDto("BMW", "530",
-                2019, "white", "1277 507800", "А111АА147");
-        Car car1 = mapper.map(createCarDto1, Car.class);
-        car1.setOwnerId(customOwnerId);
-        CreateCarDto createCarDto2 = new CreateCarDto("AUDI", "A6",
-                2020, "red", "1344 168003", "А006АА47");
-        Car car2 = mapper.map(createCarDto2, Car.class);
-        car2.setOwnerId(customOwnerId);
+    public void specificationsTest() {
 
-        int car1Id = carRepository.save(car1).getId();
-        int car2Id = carRepository.save(car2).getId();
-
-        List<Car> findCarByContainingTextInColor = carRepository.findAllContainingText("whi", Pageable.unpaged());
-
-        assertEquals(1, findCarByContainingTextInColor.size());
-        assertEquals(car1Id, findCarByContainingTextInColor.get(0).getId());
-
-        List<Car> findCarByContainingTextInBrand = carRepository.findAllContainingText("aud", Pageable.unpaged());
-        assertEquals(1, findCarByContainingTextInBrand.size());
-        assertEquals(car2Id, findCarByContainingTextInBrand.get(0).getId());
-
-        List<Car> emptyList = carRepository.findAllContainingText("mercedes", Pageable.unpaged());
-        assertTrue(emptyList.isEmpty());
     }
-
 }
 

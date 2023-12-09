@@ -9,7 +9,7 @@ import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
-import myPrivateShareCar.exception.UpdateException;
+import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
@@ -67,7 +67,7 @@ class UserServiceImplIntegrationTest {
             jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
                     new TextNode("Пётр"))));
         } catch (JsonPointerException e) {
-            throw new UpdateException("Невозможно обновить данные пользователя", e);
+            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
         }
         User user = userService.update(userId, jsonPatch);
 

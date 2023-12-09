@@ -3,7 +3,7 @@ package myPrivateShareCar.service;
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.CarDto;
 import myPrivateShareCar.dto.CreateCarDto;
-import myPrivateShareCar.exception.NotCreateException;
+import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
 import myPrivateShareCar.model.Car;
@@ -35,7 +35,7 @@ public class CarServiceImpl implements CarService {
             car.setOwnerId(ownerId);
             return carRepository.save(car);
         }
-        throw new NotCreateException("Невозможно создать автомобиль. Владелец с id " + ownerId + " не найден");
+        throw new NotCreatedException("Невозможно создать автомобиль. Владелец с id " + ownerId + " не найден");
     }
 
     @Override
@@ -93,8 +93,8 @@ public class CarServiceImpl implements CarService {
             carRepository.save(car);
         } else {
             throw new PermissionDeniedException("Невозможно установить цену аренды на автомобиль с id " + carId +
-                    ". Установить цену может только владелец. Пользователь с id " + ownerId + " не является владельцем" +
-                    " автомобиля с id " + carId);
+                    ". Установить цену может только владелец. Пользователь с id " + ownerId + " не является владельцем"
+                    + " автомобиля с id " + carId);
         }
     }
 }

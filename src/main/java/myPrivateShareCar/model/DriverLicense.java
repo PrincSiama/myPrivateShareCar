@@ -45,11 +45,4 @@ public class DriverLicense {
     @NotBlank
     @Column(name = "issued_by")
     private String issuedBy;
-
-    /*public DriverLicense(String series, String number, LocalDate dateOfIssue, String issuedBy) {
-        this.series = series;
-        this.number = number;
-        this.dateOfIssue = dateOfIssue;
-        this.issuedBy = issuedBy;
-    }*/
 }

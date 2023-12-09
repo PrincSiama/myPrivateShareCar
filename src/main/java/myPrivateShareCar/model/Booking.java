@@ -16,23 +16,25 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    /*@Column(name = "user_id")
-    private int userId;*/
+
     @ManyToOne(optional = false)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne(optional = false)
-    @JoinColumn(name="car_id")
+    @JoinColumn(name = "car_id")
     private Car car;
-    /*@Column(name = "car_id")
-    private int carId;*/
+
     @Column(name = "start_rent")
     private LocalDate startRent;
+
     @Column(name = "duration")
     private int durationRentInDays;
+
     @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
+
     @Column(name = "end_rent")
     private LocalDate endRent;
 

@@ -36,8 +36,6 @@ class BookingRepositoryTest {
         int customBooking2Id = 36;
         int customBooking3Id = 37;
 
-// todo при создании пользователя с паспортом ругается java.lang.StackOverflowError
-// вставить данные в базу через sql запрос
         CreateUserDto createOwnerDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));

@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
-import myPrivateShareCar.exception.UpdateException;
+import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
             User updateUser = objectMapper.treeToValue(patched, User.class);
             return userRepository.save(updateUser);
         } catch (JsonPatchException | JsonProcessingException e) {
-            throw new UpdateException("Невозможно обновить данные пользователя", e);
+            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
         }
     }
 
@@ -61,5 +61,4 @@ public class UserServiceImpl implements UserService {
                         " не найден"));
         return mapper.map(user, UserDto.class);
     }
-
 }

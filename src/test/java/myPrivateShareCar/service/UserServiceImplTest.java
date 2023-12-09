@@ -12,7 +12,7 @@ import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
-import myPrivateShareCar.exception.UpdateException;
+import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
@@ -24,9 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,8 +39,6 @@ class UserServiceImplTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private UserRepository userRepository;
-    @Autowired
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate(new DriverManagerDataSource());
 
     @BeforeEach
     public void setUp() {
@@ -102,7 +97,7 @@ class UserServiceImplTest {
 
             updateUser = userService.update(customUserId, jsonPatch);
         } catch (JsonPointerException | JsonPatchException | JsonProcessingException e) {
-            throw new UpdateException("Невозможно обновить данные пользователя", e);
+            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
         }
         assertNotNull(updateUser);
         assertEquals("Пётр", updateUser.getFirstname());

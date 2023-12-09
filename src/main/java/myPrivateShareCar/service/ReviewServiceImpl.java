@@ -3,6 +3,7 @@ package myPrivateShareCar.service;
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.ReviewDto;
 import myPrivateShareCar.exception.NotFoundException;
+import myPrivateShareCar.model.BookingStatus;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.model.Review;
 import myPrivateShareCar.model.User;
@@ -46,14 +47,13 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Введены неверные данные. " +
                         "Невозможно найти пользователя с id " + userId));
-            if (!bookingRepository.findByUserIdAndCarIdAndApprovedAndFinishedStatus(userId, carId).isEmpty()) {
-                return mapper.map(reviewRepository.save(new Review(car, user, text, LocalDate.now())), ReviewDto.class);
-            } else {
-                throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + userId +
-                        " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
-                        " бронирования для данного автомобиля");
-            }
-
+        if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusOrBookingStatus(userId, carId,
+                BookingStatus.APPROVED, BookingStatus.FINISHED).isEmpty()) {
+            return mapper.map(reviewRepository.save(new Review(car, user, text, LocalDate.now())), ReviewDto.class);
+        } else {
+            throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + userId +
+                    " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
+                    " бронирования для данного автомобиля");
+        }
     }
-
 }

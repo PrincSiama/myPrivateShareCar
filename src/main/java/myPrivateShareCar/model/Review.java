@@ -17,14 +17,18 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int reviewId;
+
     @ManyToOne(optional = false)
     @JoinColumn(name="user_id")
     private User user;
+
     @ManyToOne(optional = false)
     @JoinColumn(name="car_id")
     private Car car;
+
     @Column(name = "text")
     private String text;
+
     @Column(name = "write_date")
     private LocalDate writeDate;
 

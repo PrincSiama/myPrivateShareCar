@@ -2,7 +2,7 @@ package myPrivateShareCar.service;
 
 import myPrivateShareCar.dto.CarDto;
 import myPrivateShareCar.dto.CreateCarDto;
-import myPrivateShareCar.exception.NotCreateException;
+import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
 import myPrivateShareCar.model.Car;
@@ -74,7 +74,7 @@ class CarServiceImplTest {
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
                 2019, "white", "2201 887900", "А001АА155");
 
-        assertThrows(NotCreateException.class, () -> {
+        assertThrows(NotCreatedException.class, () -> {
             carService.create(ownerId, createCarDto);
         });
 

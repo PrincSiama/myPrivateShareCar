@@ -2,7 +2,7 @@ package myPrivateShareCar.service;
 
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.BookingDto;
-import myPrivateShareCar.exception.NotCreateException;
+import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
 import myPrivateShareCar.model.Booking;
@@ -13,7 +13,7 @@ import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,21 +35,19 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Невозможно создать бронирование. " +
                         "Автомобиль с id " + carId + " не найден"));
         User user = userRepository.findById(userId).filter(user1 -> user1.getDriverLicense().getSeries() != null)
-                .orElseThrow(() -> new NotCreateException("Невозможно создать бронирование автомобиля." +
+                .orElseThrow(() -> new NotCreatedException("Невозможно создать бронирование автомобиля." +
                         " У пользователь с id " + userId + " отсутствует информация о водительском удостоверении"));
 
         if (bookingRepository.bookingByRentDate(carId, startRent, endRent).isEmpty()) {
             return mapper.map(bookingRepository.save(new Booking(user, car, startRent, durationRent, endRent)),
                     BookingDto.class);
         }
-        throw new NotCreateException("Невозможно создать бронирование автомобиля с id " + carId + "." +
+        throw new NotCreatedException("Невозможно создать бронирование автомобиля с id " + carId + "." +
                 " Автомобиль уже забронирован на указанные даты");
     }
 
     @Override
-    // REVIEW: а тут же может быть передан любой статус, не только APPROVE? В сообщениях к исключениям речь только
-    // про подтверждение. Я бы "подтвердить" заменила на "изменить статус"
-    public BookingDto updateStatus(int ownerId, int bookingId, BookingStatus status) {
+    public BookingDto changeStatus(int ownerId, int bookingId, BookingStatus status) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
                         "Бронирование с id " + bookingId + " не найдено"));
@@ -61,8 +59,8 @@ public class BookingServiceImpl implements BookingService {
             return mapper.map(bookingRepository.save(booking), BookingDto.class);
         }
         throw new PermissionDeniedException("Невозможно подтвердить бронирование с id " + bookingId + ". " +
-                "Подтвердить может только владелец. Пользователь с id " + ownerId + " не является владельцем автомобиля" +
-                " с id " + car.getId());
+                "Подтвердить может только владелец. Пользователь с id " + ownerId + " не является владельцем автомобиля"
+                + " с id " + car.getId());
     }
 
     @Override
@@ -99,12 +97,12 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getOwnerBookings(int ownerId, BookingStatus status) {
         List<Booking> bookings;
         if (userRepository.existsById(ownerId)) {
-            // REVIEW: 0 и 5 здесь смотрятся странно. Возможно, тебе подойдет Pageable.unpaged()
-            if (!carRepository.findByOwnerId(ownerId, PageRequest.of(0, 5)).isEmpty()) {
+            if (!carRepository.findByOwnerId(ownerId, Pageable.unpaged()).isEmpty()) {
                 if (status == null) {
-                    bookings = bookingRepository.findByOwnerId(ownerId);
+                    bookings = bookingRepository.findAllByCar_OwnerIdOrderByStartRentAsc(ownerId);
                 } else {
-                    bookings = bookingRepository.findByOwnerIdAndStatus(ownerId, status);
+                    bookings = bookingRepository.findAllByCar_OwnerIdAndBookingStatusOrderByStartRentAsc(ownerId,
+                            status);
                 }
             } else {
                 throw new PermissionDeniedException("Невозможно получить список бронирований. " +
@@ -117,5 +115,4 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(booking -> mapper.map(booking, BookingDto.class)).collect(Collectors.toList());
     }
-
 }

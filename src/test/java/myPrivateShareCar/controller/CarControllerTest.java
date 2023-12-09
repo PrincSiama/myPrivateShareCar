@@ -72,16 +72,6 @@ public class CarControllerTest {
         CreateCarDto request = new CreateCarDto("Volvo", "S80", 2018, "black",
                 "8080 123456", "Ц1Й4");
         int customId = 10;
-
-        /*assertThatThrownBy(
-                        () -> mvc.perform(post("/cars")
-                                        .content(objectMapper.writeValueAsString(request))
-                                        .header("X-Owner-Id", customId)
-                                        .characterEncoding(StandardCharsets.UTF_8)
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .accept(MediaType.APPLICATION_JSON)))
-                .isInstanceOf(MethodArgumentNotValidException.class);*/
-
         mvc.perform(post("/cars")
                         .content(objectMapper.writeValueAsString(request))
                         .header("X-Owner-Id", customId)
@@ -89,17 +79,9 @@ public class CarControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-//                todo нужно проверить, что возникает ошибка при валидации данных
                 .andExpect(jsonPath("$.error")
                         .value("Нарушено условие валидации." +
                                 " Указанные данные не соответствуют требованиям валидации"));
-
-//                .andExpect(content().string(containsString("Некорректный формат номера")));
-
-//        .andExpect(result -> {
-//                    assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException);
-//                })
-
     }
 
     @Test
@@ -117,7 +99,5 @@ public class CarControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
-
 }

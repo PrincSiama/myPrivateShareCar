@@ -27,7 +27,7 @@ public class BookingController {
     public BookingDto updateStatus(@PathVariable int bookingId,
                                    @RequestParam BookingStatus status,
                                    @RequestHeader(value = "X-Owner-Id") int ownerId) {
-        return bookingService.updateStatus(ownerId, bookingId, status);
+        return bookingService.changeStatus(ownerId, bookingId, status);
     }
 
     @GetMapping("/{bookingId}")

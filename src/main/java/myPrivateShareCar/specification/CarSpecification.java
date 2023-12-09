@@ -64,5 +64,4 @@ public class CarSpecification {
                     .value(bookingList.stream().map(booking -> booking.getCar().getId()).collect(Collectors.toList())));
         }
     }
-
 }

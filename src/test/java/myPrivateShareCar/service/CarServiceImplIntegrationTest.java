@@ -97,6 +97,7 @@ class CarServiceImplIntegrationTest {
         assertNotNull(car);
         assertNotNull(carDto);
     }
+
     @Test
     @DisplayName("Получение несуществующего автомобиля")
     public void getCarByIdWithNotExistCarTest() {
@@ -138,5 +139,4 @@ class CarServiceImplIntegrationTest {
         assertTrue(testList3.stream().map(CarDto::getId).collect(Collectors.toList())
                 .containsAll(List.of(car.getId(), car2.getId())));
     }
-
 }

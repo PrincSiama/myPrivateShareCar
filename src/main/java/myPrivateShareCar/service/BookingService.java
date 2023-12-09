@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BookingService {
     BookingDto create(int userId, int carId, LocalDate startRent, int durationRent);
-    BookingDto updateStatus(int ownerId, int bookingId, BookingStatus status);
+    BookingDto changeStatus(int ownerId, int bookingId, BookingStatus status);
     BookingDto getBookingById(int bookingId, int userId);
     List<BookingDto> getUserBookings(int userId, BookingStatus status);
     List<BookingDto> getOwnerBookings(int ownerId, BookingStatus status);
