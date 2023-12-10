@@ -102,10 +102,7 @@ class CarServiceImplTest {
     @Test
     @DisplayName("Удаление несуществующего автомобиля")
     void deleteCarWithNotExistCarTest() {
-        int ownerId = 55;
         int customCarId = 10;
-        Car car = new Car(customCarId, "BMW", "530", 2019, "white",
-                "2201 887900", "А001АА155", ownerId, 5000, new ArrayList<>());
 
         when(carRepository.findById(Mockito.anyInt()))
                 .thenThrow(new NotFoundException("Невозможно удалить автомобиль. Автомобиль с id " + customCarId +
@@ -159,10 +156,7 @@ class CarServiceImplTest {
     @Test
     @DisplayName("Получение по id несуществующего автомобиля")
     void getCarByIdWithNotExistCarTest() {
-        int ownerId = 55;
         int customCarId = 10;
-        Car car = new Car(5, "BMW", "530", 2019, "white",
-                "2201 887900", "А001АА155", ownerId, 5000, new ArrayList<>());
 
         when(carRepository.findById(Mockito.anyInt()))
                 .thenThrow(new NotFoundException("Невозможно получить автомобиль. Автомобиль с id " + customCarId +

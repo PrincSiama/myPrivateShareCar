@@ -78,10 +78,5 @@ class CarRepositoryTest {
         List<Car> emptyList = carRepository.findByOwnerId(2, Pageable.unpaged());
         assertTrue(emptyList.isEmpty());
     }
-
-    @Test
-    public void specificationsTest() {
-
-    }
 }
 

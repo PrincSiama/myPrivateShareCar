@@ -1,13 +1,19 @@
 package myPrivateShareCar.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.AddOperation;
+import com.github.fge.jsonpatch.JsonPatch;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
+import myPrivateShareCar.model.DriverLicense;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +25,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,8 +100,25 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Корректное обновление пользователя")
-    void update() {
-        // todo как написать jsonPatch?
+    void updateUserTest() throws Exception {
+        objectMapper.findAndRegisterModules();
+        DriverLicense driverLicense = new DriverLicense(1,null, "1234", "123456",
+                LocalDate.of(2015, 5, 5), "ГАИ 5555");
+        JsonPatch jsonPatch = new JsonPatch(List.of(new AddOperation(new JsonPointer("/driverLicense"),
+                objectMapper.convertValue(driverLicense, JsonNode.class))));
+
+        int customUserId = 17;
+        mvc.perform(patch("/users/" + customUserId)
+                        .content(objectMapper.writeValueAsString(jsonPatch))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        ArgumentCaptor<JsonPatch> captor = ArgumentCaptor.forClass(JsonPatch.class);
+        verify(userService).update(eq(customUserId), captor.capture());
+        JsonPatch jsonPatchForService = captor.getValue();
+
+        assertEquals(jsonPatch.toString(), jsonPatchForService.toString());
     }
 
     @Test

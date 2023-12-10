@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "driver_license")
+@Table(name = "driver_licenses")
 public class DriverLicense {
     @Id
     @Column(unique = true)
@@ -27,7 +27,6 @@ public class DriverLicense {
     @JsonIgnore
     private User user;
 
-    // REVIEW: а эти паттерны в какой момент проверяются? При сохранении в базу данных?
     @Pattern(regexp = "^[0-9]{4}$",
             message = "Некорректный формат серии водительского удостоверения. Серия должна содержать 4 цифры")
     @Column(name = "driver_license_series")

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +33,7 @@ public class User {
     @Column(name = "registration_date")
     private LocalDate registrationDate;
 
-    // REVIEW: эти два метода сейчас не используются, они точно нужны?
-   /* public void setPassport(Passport passport) {
+    public void setPassport(Passport passport) {
         if (passport != null) {
             this.passport = passport;
             this.passport.setUser(this);
@@ -46,5 +45,5 @@ public class User {
             this.driverLicense = driverLicense;
             this.driverLicense.setUser(this);
         }
-    }*/
+    }
 }

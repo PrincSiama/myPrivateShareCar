@@ -9,7 +9,6 @@ import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
-import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.Passport;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
@@ -54,8 +53,9 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     @DisplayName("Корректное обновление пользователя")
-    void update() {
+    void updateTest() throws JsonPointerException {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
@@ -63,12 +63,28 @@ class UserServiceImplIntegrationTest {
         User testUser = userService.create(createUserDto);
         int userId = testUser.getId();
         JsonPatch jsonPatch;
-        try {
-            jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
-                    new TextNode("Пётр"))));
-        } catch (JsonPointerException e) {
-            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
-        }
+        jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
+                new TextNode("Пётр"))));
+        User user = userService.update(userId, jsonPatch);
+
+        assertNotNull(user);
+        assertNotNull(user.getRegistrationDate());
+        assertEquals(userId, user.getId());
+        assertEquals(createUserDto.getEmail(), user.getEmail());
+    }
+
+    @Test
+    @DisplayName("Обновление пользователя с невалидными данными")
+    void updateWithNoCorrectDataTest() throws JsonPointerException {
+        objectMapper.findAndRegisterModules();
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("12345", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"));
+        User testUser = userService.create(createUserDto);
+        int userId = testUser.getId();
+        JsonPatch jsonPatch;
+        jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
+                new TextNode("Пётр"))));
         User user = userService.update(userId, jsonPatch);
 
         assertNotNull(user);
@@ -104,7 +120,6 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    @DirtiesContext
     @DisplayName("Корректное получение пользователя")
     void getUserByIdTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",

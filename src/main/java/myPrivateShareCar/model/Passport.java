@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "passport")
+@Table(name = "passports")
 public class Passport {
     @Id
     @Column(unique = true, nullable = false)

@@ -84,12 +84,6 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jeasy</groupId>
-			<artifactId>easy-random-core</artifactId>
-			<version>${jeasy.version}</version>
-		</dependency>
-
     </dependencies>
 
 	<build>
