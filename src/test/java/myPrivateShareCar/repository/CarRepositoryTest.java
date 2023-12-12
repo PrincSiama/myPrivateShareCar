@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ class CarRepositoryTest {
     private final ModelMapper mapper = new ModelMapper();
 
     @Test
+    @DirtiesContext
     @DisplayName("Поиск автомобиля по id владельца")
     public void findByOwnerIdTest() {
         int customOwnerId = 5;
@@ -50,6 +52,7 @@ class CarRepositoryTest {
     }
 
     @Test
+    @DirtiesContext
     @DisplayName("Поиск автомобилей по id владельца")
     public void testFindByOwnerIdWithTwoCar() {
         int customOwnerId = 5;
@@ -70,7 +73,7 @@ class CarRepositoryTest {
         carRepository.save(car2);
         carRepository.save(car3);
 
-        List<Car> carsFromRepository = carRepository.findByOwnerId(customOwnerId, Pageable.unpaged()); //Pageable.ofSize(5)
+        List<Car> carsFromRepository = carRepository.findByOwnerId(customOwnerId, Pageable.unpaged());
 
         assertEquals(2, carsFromRepository.size());
         assertTrue(carsFromRepository.containsAll(List.of(car1, car2)));

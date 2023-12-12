@@ -85,7 +85,6 @@ class UserControllerTest {
         CreateUserDto request = new CreateUserDto("Иван", "Иванов", "ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
-        int customUserId = 15;
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(request))
@@ -102,7 +101,7 @@ class UserControllerTest {
     @DisplayName("Корректное обновление пользователя")
     void updateUserTest() throws Exception {
         objectMapper.findAndRegisterModules();
-        DriverLicense driverLicense = new DriverLicense(1,null, "1234", "123456",
+        DriverLicense driverLicense = new DriverLicense(1, null, "1234", "123456",
                 LocalDate.of(2015, 5, 5), "ГАИ 5555");
         JsonPatch jsonPatch = new JsonPatch(List.of(new AddOperation(new JsonPointer("/driverLicense"),
                 objectMapper.convertValue(driverLicense, JsonNode.class))));

@@ -12,7 +12,7 @@ import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.ReviewRepository;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,9 +29,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final ModelMapper mapper;
 
     @Override
-    public List<ReviewDto> getReviewByCar(int carId, int page, int size) {
+    public List<ReviewDto> getReviewByCar(int carId, Pageable pageable) {
         if (carRepository.existsById(carId)) {
-            return reviewRepository.findByCar_IdOrderByWriteDateAsc(carId, PageRequest.of(page, size)).stream()
+            return reviewRepository.findByCar_IdOrderByWriteDateAsc(carId, pageable).stream()
                     .map(review -> mapper.map(review, ReviewDto.class)).collect(Collectors.toList());
         }
         throw new NotFoundException("Невозможно получить отзывы по автомобилю. " +
@@ -47,8 +47,8 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Введены неверные данные. " +
                         "Невозможно найти пользователя с id " + userId));
-        if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusOrBookingStatus(userId, carId,
-                BookingStatus.APPROVED, BookingStatus.FINISHED).isEmpty()) {
+        if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusIn(userId, carId,
+                List.of(BookingStatus.APPROVED, BookingStatus.FINISHED)).isEmpty()) {
             return mapper.map(reviewRepository.save(new Review(car, user, text, LocalDate.now())), ReviewDto.class);
         } else {
             throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + userId +

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
@@ -61,17 +62,13 @@ class CarServiceImplIntegrationTest {
         assertNotNull(car);
         int carId = car.getId();
         carService.delete(ownerId, carId);
-        assertThrows(NotFoundException.class, () -> {
-            carService.getById(carId);
-        });
+        assertThrows(NotFoundException.class, () -> carService.getById(carId));
     }
 
     @Test
     @DisplayName("Удаление несуществующего автомобиля")
     public void deleteCarWithNotExistCarTest() {
-        assertThrows(NotFoundException.class, () -> {
-            carService.delete(5, 577);
-        });
+        assertThrows(NotFoundException.class, () -> carService.delete(5, 577));
     }
 
     @Test
@@ -89,9 +86,7 @@ class CarServiceImplIntegrationTest {
     @Test
     @DisplayName("Получение несуществующего автомобиля")
     public void getCarByIdWithNotExistCarTest() {
-        assertThrows(NotFoundException.class, () -> {
-            carService.getById(578);
-        });
+        assertThrows(NotFoundException.class, () -> carService.getById(578));
     }
 
     @Test
@@ -100,13 +95,13 @@ class CarServiceImplIntegrationTest {
     public void getOwnerCarsTest() {
         int ownerId = createUser();
 
-        List<CarDto> testList1 = carService.getOwnerCars(ownerId, 0, 5);
+        List<CarDto> testList1 = carService.getOwnerCars(ownerId, Pageable.unpaged());
 
         assertTrue(testList1.isEmpty());
 
         Car car = createCar(ownerId);
 
-        List<CarDto> testList2 = carService.getOwnerCars(ownerId, 0, 5);
+        List<CarDto> testList2 = carService.getOwnerCars(ownerId, Pageable.unpaged());
 
         assertFalse(testList2.isEmpty());
         assertEquals(car.getId(), testList2.get(0).getId());
@@ -121,7 +116,7 @@ class CarServiceImplIntegrationTest {
                 LocalDate.of(2019, 4, 20), "МВД №15"))).getId();
         Car car3 = carService.create(ownerId + 1, createCarDto3);
 
-        List<CarDto> testList3 = carService.getOwnerCars(ownerId, 0, 5);
+        List<CarDto> testList3 = carService.getOwnerCars(ownerId, Pageable.unpaged());
 
         assertEquals(2, testList3.size());
         assertTrue(testList3.stream().map(CarDto::getId).collect(Collectors.toList())
@@ -129,6 +124,7 @@ class CarServiceImplIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     @DisplayName("Поиск авто по ключевым словам и датам бронирования")
     public void specificationsSearchTest() {
         int customBooking1Id = 1;
@@ -160,17 +156,30 @@ class CarServiceImplIntegrationTest {
                 3, BookingStatus.WAITING, LocalDate.now().plusDays(18));
         bookingRepository.save(booking3);
 
-        List<CarDto> carDtoList1 = carService.search(text, null, null, 0, 5);
+        List<CarDto> carDtoList1 = carService.search(text, null, null, Pageable.unpaged());
         assertFalse(carDtoList1.isEmpty());
         assertEquals(1, carDtoList1.size());
         assertEquals(car1.getId(), carDtoList1.get(0).getId());
 
-        List<CarDto> carDtoList2 = carService.search(null, startRent, endRent, 0, 5);
+        List<CarDto> carDtoList2 = carService.search(null, startRent, endRent, Pageable.unpaged());
         assertFalse(carDtoList2.isEmpty());
         assertEquals(1, carDtoList2.size());
         assertEquals(car2.getId(), carDtoList2.get(0).getId());
-        // todo дописать для текста и дат, для всего нулл
 
+        List<CarDto> carDtoList3 = carService.search(null,
+                startRent.plusDays(50), endRent.plusDays(55), Pageable.unpaged());
+        assertFalse(carDtoList3.isEmpty());
+        assertEquals(2, carDtoList3.size());
+
+        List<CarDto> carDtoList4 = carService.search(text,
+                startRent.plusDays(5), endRent.plusDays(7), Pageable.unpaged());
+        assertFalse(carDtoList4.isEmpty());
+        assertEquals(1, carDtoList4.size());
+        assertEquals(car1.getId(), carDtoList4.get(0).getId());
+
+        List<CarDto> carDtoList5 = carService.search(null, null, null, Pageable.unpaged());
+        assertFalse(carDtoList5.isEmpty());
+        assertEquals(2, carDtoList5.size());
     }
 
     private Integer createUser() {

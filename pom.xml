@@ -17,11 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<model.mapper.version>3.1.1</model.mapper.version>
-		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<json-patch.version>1.9</json-patch.version>
-		<jeasy.version>5.0.0</jeasy.version>
-		<h2database.version>2.2.220</h2database.version>
-		<jackson-datatype-jsr310.version>2.14.2</jackson-datatype-jsr310.version>
 	</properties>
 
 	<dependencies>
@@ -38,6 +34,7 @@
 			<artifactId>json-patch</artifactId>
 			<version>${json-patch.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -50,19 +47,17 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>${h2database.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>${javax.validation.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>${model.mapper.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 
 		<dependency>
@@ -70,19 +65,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
     </dependencies>
 

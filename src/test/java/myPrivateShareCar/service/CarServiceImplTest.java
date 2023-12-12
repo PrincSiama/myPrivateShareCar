@@ -74,9 +74,7 @@ class CarServiceImplTest {
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
                 2019, "white", "2201 887900", "А001АА155");
 
-        assertThrows(NotCreatedException.class, () -> {
-            carService.create(ownerId, createCarDto);
-        });
+        assertThrows(NotCreatedException.class, () -> carService.create(ownerId, createCarDto));
 
         verify(userRepository).existsById(Mockito.any(Integer.class));
     }
@@ -108,9 +106,7 @@ class CarServiceImplTest {
                 .thenThrow(new NotFoundException("Невозможно удалить автомобиль. Автомобиль с id " + customCarId +
                         " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            carRepository.findById(customCarId);
-        });
+        assertThrows(NotFoundException.class, () -> carRepository.findById(customCarId));
 
         verify(carRepository, never()).deleteById(Mockito.any(Integer.class));
     }
@@ -125,9 +121,7 @@ class CarServiceImplTest {
 
         when(carRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(car));
 
-        assertThrows(PermissionDeniedException.class, () -> {
-            carService.delete(ownerId, customCarId);
-        });
+        assertThrows(PermissionDeniedException.class, () -> carService.delete(ownerId, customCarId));
 
         verify(carRepository, never()).deleteById(Mockito.any(Integer.class));
     }
@@ -162,8 +156,6 @@ class CarServiceImplTest {
                 .thenThrow(new NotFoundException("Невозможно получить автомобиль. Автомобиль с id " + customCarId +
                         " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            carService.getById(customCarId);
-        });
+        assertThrows(NotFoundException.class, () -> carService.getById(customCarId));
     }
 }

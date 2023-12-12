@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,11 +28,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceImplIntegrationTest {
+    @Autowired
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
-    private final ModelMapper modelMapper = new ModelMapper();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() {
@@ -53,9 +57,20 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
+    @DisplayName("Создание пользователя с невалидными данными")
+    void createUserWithNoCorrectDataTest() {
+        objectMapper.findAndRegisterModules();
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("12345", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"));
+
+        assertThrows(TransactionSystemException.class, () -> userService.create(createUserDto));
+    }
+
+    @Test
     @DirtiesContext
     @DisplayName("Корректное обновление пользователя")
-    void updateTest() throws JsonPointerException {
+    void updateUserTest() throws JsonPointerException {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
@@ -74,23 +89,19 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    @DisplayName("Обновление пользователя с невалидными данными")
-    void updateWithNoCorrectDataTest() throws JsonPointerException {
+    @DisplayName("Обновление пользователя невалидными данными")
+    void updateUserWithNoCorrectDataTest() throws JsonPointerException {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
-                LocalDate.of(2000, 10, 1), new Passport("12345", "123456",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
                 LocalDate.of(2014, 5, 15), "МВД №1"));
         User testUser = userService.create(createUserDto);
         int userId = testUser.getId();
         JsonPatch jsonPatch;
-        jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
-                new TextNode("Пётр"))));
-        User user = userService.update(userId, jsonPatch);
+        jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/passport/series"),
+                new TextNode("55555"))));
 
-        assertNotNull(user);
-        assertNotNull(user.getRegistrationDate());
-        assertEquals(userId, user.getId());
-        assertEquals(createUserDto.getEmail(), user.getEmail());
+        assertThrows(TransactionSystemException.class, () -> userService.update(userId, jsonPatch));
     }
 
     @Test

@@ -6,6 +6,7 @@ import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.dto.PriceDto;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class CarController {
     public List<CarDto> getOwnerCars(@RequestHeader(value = "X-Owner-Id") int ownerId,
                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                      @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        return carService.getOwnerCars(ownerId, page, size);
+        return carService.getOwnerCars(ownerId, PageRequest.of(page, size));
     }
 
     @GetMapping("/search")
@@ -51,7 +52,7 @@ public class CarController {
                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endRent,
                                @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        return carService.search(findText, startRent, endRent, page, size);
+        return carService.search(findText, startRent, endRent, PageRequest.of(page, size));
     }
 
     @PutMapping("/{carId}")

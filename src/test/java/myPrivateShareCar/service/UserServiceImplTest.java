@@ -167,8 +167,6 @@ class UserServiceImplTest {
                 new NotFoundException("Невозможно получить пользователя. Пользователь с id "
                         + customUserId + " не найден"));
 
-        assertThrows(NotFoundException.class, () -> {
-            userService.getById(customUserId);
-        });
+        assertThrows(NotFoundException.class, () -> userService.getById(customUserId));
     }
 }

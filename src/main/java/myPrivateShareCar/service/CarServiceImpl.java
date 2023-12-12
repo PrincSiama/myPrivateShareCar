@@ -6,19 +6,23 @@ import myPrivateShareCar.dto.CreateCarDto;
 import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
+import myPrivateShareCar.model.Booking;
 import myPrivateShareCar.model.Car;
 import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.UserRepository;
-import myPrivateShareCar.specification.CarSpecification;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static myPrivateShareCar.specification.CarSpecification.*;
 
 @Service
 @AllArgsConstructor
@@ -63,9 +67,9 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDto> getOwnerCars(int ownerId, int page, int size) {
+    public List<CarDto> getOwnerCars(int ownerId, Pageable pageable) {
         if (userRepository.existsById(ownerId)) {
-            return carRepository.findByOwnerId(ownerId, PageRequest.of(page, size)).stream()
+            return carRepository.findByOwnerId(ownerId, pageable).stream()
                     .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
         }
         throw new NotFoundException("Невозможно получить автомобили пользователя. Пользователь с id "
@@ -73,15 +77,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDto> search(String text, LocalDate startRent, LocalDate endRent, int page, int size) {
-        CarSpecification carSpecification = new CarSpecification(bookingRepository);
-        List<Specification<Car>> specifications = carSpecification
-                .searchParametersToSpecifications(text, startRent, endRent);
+    public List<CarDto> search(String text, LocalDate startRent, LocalDate endRent, Pageable pageable) {
+        Specification<Car> specification = searchParametersToSpecification(text, startRent, endRent);
 
-        return carRepository.findAll((specifications.stream().reduce(Specification::and)
-                                .orElse((root, query, criteriaBuilder) -> criteriaBuilder.conjunction())),
-                        PageRequest.of(page, size)).stream().map(car -> mapper.map(car, CarDto.class))
-                .collect(Collectors.toList());
+        return carRepository.findAll(specification, pageable)
+                .stream().map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
     }
 
     @Override
@@ -96,5 +96,17 @@ public class CarServiceImpl implements CarService {
                     ". Установить цену может только владелец. Пользователь с id " + ownerId + " не является владельцем"
                     + " автомобиля с id " + carId);
         }
+    }
+
+    private Specification<Car> searchParametersToSpecification(String text,
+                                                               LocalDate startRent, LocalDate endRent) {
+        List<Specification<Car>> specifications = new ArrayList<>();
+        List<Booking> bookingList = bookingRepository.findAll(findBookingByDate(startRent, endRent));
+
+        specifications.add(text == null ? null : findText(text));
+        specifications.add((startRent == null && endRent == null) ? null : availableCars(bookingList));
+
+        return specifications.stream().filter(Objects::nonNull).reduce(Specification::and)
+                .orElse((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
     }
 }

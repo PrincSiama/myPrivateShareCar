@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import myPrivateShareCar.dto.AddReviewDto;
 import myPrivateShareCar.dto.ReviewDto;
 import myPrivateShareCar.service.ReviewService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ReviewController {
     public List<ReviewDto> getReviewByCar(@PathVariable int carId,
                                           @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                           @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        return reviewService.getReviewByCar(carId, page, size);
+        return reviewService.getReviewByCar(carId, PageRequest.of(page, size));
     }
 
 }

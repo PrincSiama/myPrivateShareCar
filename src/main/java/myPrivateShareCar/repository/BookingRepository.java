@@ -18,9 +18,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
 
     List<Booking> findAllByCar_OwnerIdAndBookingStatusOrderByStartRentAsc(int ownerId, BookingStatus bookingStatus);
 
-    List<Booking> findAllByUserIdAndCarIdAndBookingStatusOrBookingStatus(int userId, int carId,
-                                                                         BookingStatus bookingStatusApproved,
-                                                                         BookingStatus bookingStatusFinished);
+    List<Booking> findAllByUserIdAndCarIdAndBookingStatusIn(int userId, int carId,
+                                                            List<BookingStatus> bookingStatuses);
 
     @Query("select b from Booking b" +
             " where b.car.id = ?1 and b.bookingStatus = 'APPROVED' and" +

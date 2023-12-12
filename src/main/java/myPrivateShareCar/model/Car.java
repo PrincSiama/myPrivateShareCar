@@ -36,7 +36,6 @@ public class Car {
     @Column(name = "owner_id")
     private int ownerId;
 
-    // добавить в будущем динамическое ценообразование
     @Column(name = "price_per_day")
     private int pricePerDay;
 
