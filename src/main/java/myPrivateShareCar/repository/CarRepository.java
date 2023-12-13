@@ -1,16 +1,12 @@
 package myPrivateShareCar.repository;
 
 import myPrivateShareCar.model.Car;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.Collection;
+import java.util.List;
 
-public interface CarRepository {
-    Car create(Car car);
-    Car update(Car car);
-    void delete(String id);
-    Car getById(String id);
-    Collection<Car> getOwnerCars(String id);
-    Collection<Car> getAll();
-    Collection<Car> find(String text);
-    boolean isCorrect(String id);
+public interface CarRepository extends JpaRepository<Car, Integer>, JpaSpecificationExecutor<Car> {
+    List<Car> findByOwnerId(int ownerId, Pageable pageable);
 }

@@ -2,10 +2,11 @@ package myPrivateShareCar.dto;
 
 import lombok.Data;
 @Data
-public class GetCarDto {
+public class CarDto {
+    private int id;
     private String brand;
     private String model;
-    private Integer yearOfManufacture;
+    private int yearOfManufacture;
     private String color;
-    private double pricePerDay;
+    private int pricePerDay;
 }

@@ -2,26 +2,48 @@ package myPrivateShareCar.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Data
+@Entity
+@Table(name = "users")
 public class User {
-    private String id;
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String surname;
-    @NotBlank
-    @Email
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
+    private int id;
+
+    private String firstname;
+
+    private String lastname;
+
     private String email;
-    @Past
+
     private LocalDate birthday;
-    private String numberDriverLicense; // отдельный объект со всей информацией
-    @NotBlank
-    private String numberPassport; // отдельный объект с всей информацией из паспорта // добавить проверку уникальности
+
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Passport passport;
+
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private DriverLicense driverLicense;
+
+    @Column(name = "registration_date")
     private LocalDate registrationDate;
 
+    public void setPassport(Passport passport) {
+        if (passport != null) {
+            this.passport = passport;
+            this.passport.setUser(this);
+        }
+    }
+
+    public void setDriverLicense(DriverLicense driverLicense) {
+        if (driverLicense != null) {
+            this.driverLicense = driverLicense;
+            this.driverLicense.setUser(this);
+        }
+    }
 }

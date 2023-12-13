@@ -1,13 +1,7 @@
 package myPrivateShareCar.repository;
 
 import myPrivateShareCar.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository {
-    User create(User user);
-    User update(User user);
-    void delete(String id);
-    User getById(String id);
-    boolean isExistEmail(String email);
-    boolean isExistPassport(String passport);
-    boolean isCorrect(String id);
+public interface UserRepository extends JpaRepository<User, Integer> {
 }
