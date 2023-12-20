@@ -1,0 +1,754 @@
+{
+	"info": {
+		"_postman_id": "71e3708b-488e-4b76-bd4c-db428738aef6",
+		"name": "MyPrivateShareCar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28174809"
+	},
+	"item": [
+		{
+			"name": "create user1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"user1\",\r\n    \"lastname\": \"lastname1\",\r\n    \"email\": \"user1@user.com\",\r\n    \"birthday\": \"2001-09-03\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1234\",\r\n        \"number\": \"123456\",\r\n        \"dateOfIssue\": \"2015-10-10\",\r\n        \"issuedBy\": \"УВД ЦАО №2 по области\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"user2\",\r\n    \"lastname\": \"lastname2\",\r\n    \"email\": \"user2@user.com\",\r\n    \"birthday\": \"2000-05-11\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"9876\",\r\n        \"number\": \"543210\",\r\n        \"dateOfIssue\": \"2019-02-11\",\r\n        \"issuedBy\": \"УВД ЛАО №6 по области\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user3",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"user3\",\r\n    \"lastname\": \"lastname3\",\r\n    \"email\": \"user3@user.com\",\r\n    \"birthday\": \"2012-05-05\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1212\",\r\n        \"number\": \"121212\",\r\n        \"dateOfIssue\": \"2012-12-12\",\r\n        \"issuedBy\": \"УВД ВАО №12\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create car1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"brand\": \"Honda\",\r\n    \"model\": \"S2000\",\r\n    \"yearOfManufacture\": \"1998\",\r\n    \"color\": \"red\",\r\n    \"documentNumber\": \"33937\",\r\n    \"registrationNumber\": \"С200ХХ177\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cars",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create car2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"brand\": \"BMW\",\r\n    \"model\": \"530\",\r\n    \"yearOfManufacture\": \"2019\",\r\n    \"color\": \"white\",\r\n    \"documentNumber\": \"88188\",\r\n    \"registrationNumber\": \"А530АА53\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cars",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user1",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\"op\": \"add\", \"path\": \"/driverLicense\", \"value\": {\r\n        \"series\" : \"1234\",\r\n        \"number\" : \"567890\",\r\n        \"dateOfIssue\" : \"2015-05-05\",\r\n        \"issuedBy\" : \"ГАИ 5555\"\r\n    }}\r\n]"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user by id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/users/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get car by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/cars/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get owner cars",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/cars",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/cars/search",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"search"
+					],
+					"query": [
+						{
+							"key": "text",
+							"value": "ond",
+							"disabled": true
+						},
+						{
+							"key": "startRent",
+							"value": "2023-12-26",
+							"disabled": true
+						},
+						{
+							"key": "endRent",
+							"value": "2023-12-30",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete car by id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/cars/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create booking",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"carId\": \"1\",\r\n    \"startRent\": \"2024-01-01\",\r\n    \"durationRentInDays\": 5\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update booking status",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/booking/1?status=APPROVED",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"1"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "APPROVED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get booking by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/booking/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user bookings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/booking?status=APPROVED",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "APPROVED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get owner bookings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/booking/owner",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"owner"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "WAITING",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add review",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-User-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"Отличный автомобиль!\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cars/1/review",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"1",
+						"review"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get review by carId",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/cars/1/review?page=0&size=3",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"1",
+						"review"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update price",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "3",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pricePerDay\": \"2500\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cars/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
