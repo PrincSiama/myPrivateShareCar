@@ -5,10 +5,7 @@ import lombok.Data;
 import myPrivateShareCar.model.Passport;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
@@ -26,5 +23,8 @@ public class CreateUserDto {
     @NotNull
     @Valid
     private Passport passport;
+    @NotBlank
+    @Size(min = 8)
+    private String password;
 
 }

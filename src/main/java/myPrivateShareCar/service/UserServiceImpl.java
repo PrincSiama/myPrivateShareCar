@@ -13,6 +13,7 @@ import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,11 +24,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User create(CreateUserDto createUserDto) {
         User user = mapper.map(createUserDto, User.class);
         user.setRegistrationDate(LocalDate.now());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

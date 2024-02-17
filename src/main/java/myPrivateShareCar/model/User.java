@@ -22,6 +22,10 @@ public class User {
 
     private LocalDate birthday;
 
+    private String password;
+
+    private String role = "user";
+
     @PrimaryKeyJoinColumn
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Passport passport;

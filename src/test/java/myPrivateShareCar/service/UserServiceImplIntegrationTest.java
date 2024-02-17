@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionSystemException;
 
@@ -36,10 +38,11 @@ class UserServiceImplIntegrationTest {
     private ModelMapper modelMapper;
     @Autowired
     private ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper);
+        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper, passwordEncoder);
     }
 
     @Test
@@ -48,7 +51,7 @@ class UserServiceImplIntegrationTest {
     void createUserTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         User user = userService.create(createUserDto);
 
@@ -62,7 +65,7 @@ class UserServiceImplIntegrationTest {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("12345", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         assertThrows(TransactionSystemException.class, () -> userService.create(createUserDto));
     }
@@ -74,7 +77,7 @@ class UserServiceImplIntegrationTest {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         User testUser = userService.create(createUserDto);
         int userId = testUser.getId();
         JsonPatch jsonPatch;
@@ -94,7 +97,7 @@ class UserServiceImplIntegrationTest {
         objectMapper.findAndRegisterModules();
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         User testUser = userService.create(createUserDto);
         int userId = testUser.getId();
         JsonPatch jsonPatch;
@@ -110,7 +113,7 @@ class UserServiceImplIntegrationTest {
     void deleteUserTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         User user = userService.create(createUserDto);
 
@@ -135,7 +138,7 @@ class UserServiceImplIntegrationTest {
     void getUserByIdTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         User user = userService.create(createUserDto);
 

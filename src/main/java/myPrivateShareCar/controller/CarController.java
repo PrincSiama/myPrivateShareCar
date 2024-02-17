@@ -8,6 +8,7 @@ import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{carId}")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public void delete(@PathVariable int carId,
                        @RequestHeader(value = "X-Owner-Id") int ownerId) {
         carService.delete(ownerId, carId);
@@ -38,6 +40,7 @@ public class CarController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public List<CarDto> getOwnerCars(@RequestHeader(value = "X-Owner-Id") int ownerId,
                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                      @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
@@ -56,6 +59,7 @@ public class CarController {
     }
 
     @PutMapping("/{carId}")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public void updatePrice(@RequestBody @Valid PriceDto priceDto,
                             @PathVariable int carId,
                             @RequestHeader(value = "X-Owner-Id") int ownerId) {

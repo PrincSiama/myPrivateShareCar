@@ -48,7 +48,7 @@ class UserControllerTest {
         objectMapper.findAndRegisterModules();
         CreateUserDto request = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         int customUserId = 15;
         when(userService.create(Mockito.any(CreateUserDto.class)))
                 .thenAnswer(invocationOnMock -> {
@@ -84,7 +84,7 @@ class UserControllerTest {
         objectMapper.findAndRegisterModules();
         CreateUserDto request = new CreateUserDto("Иван", "Иванов", "ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(request))
@@ -142,7 +142,7 @@ class UserControllerTest {
 
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         UserDto userDto = new ModelMapper().map(createUserDto, UserDto.class);
         userDto.setId(customUserId);

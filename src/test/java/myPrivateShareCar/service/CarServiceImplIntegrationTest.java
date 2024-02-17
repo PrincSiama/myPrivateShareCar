@@ -113,7 +113,7 @@ class CarServiceImplIntegrationTest {
         Car car2 = carService.create(ownerId, createCarDto2);
         int owner2Id = userService.create(new CreateUserDto("Вася", "Васильков", "vasya@vv.ru",
                 LocalDate.of(1996, 7, 12), new Passport("2345", "234567",
-                LocalDate.of(2019, 4, 20), "МВД №15"))).getId();
+                LocalDate.of(2019, 4, 20), "МВД №15"), "password1")).getId();
         Car car3 = carService.create(ownerId + 1, createCarDto3);
 
         List<CarDto> testList3 = carService.getOwnerCars(ownerId, Pageable.unpaged());
@@ -136,10 +136,10 @@ class CarServiceImplIntegrationTest {
 
         User owner = userService.create(new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1")));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1"));
         User user = userService.create(new CreateUserDto("Вася", "Васильков", "vasya@vv.ru",
                 LocalDate.of(1996, 7, 12), new Passport("2345", "234567",
-                LocalDate.of(2019, 4, 20), "МВД №15")));
+                LocalDate.of(2019, 4, 20), "МВД №15"), "password2"));
 
         Car car1 = carService.create(owner.getId(), new CreateCarDto("BMW", "530",
                 2019, "white", "2201 887900", "А001АА155"));
@@ -185,7 +185,7 @@ class CarServiceImplIntegrationTest {
     private Integer createUser() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         User testUser = userService.create(createUserDto);
         return testUser.getId();
     }

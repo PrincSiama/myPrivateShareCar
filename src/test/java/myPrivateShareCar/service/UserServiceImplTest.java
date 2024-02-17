@@ -24,6 +24,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,12 +39,13 @@ class UserServiceImplTest {
     private UserService userService;
     private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Mock
     private UserRepository userRepository;
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper);
+        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper, passwordEncoder);
     }
 
     @Test
@@ -50,7 +53,7 @@ class UserServiceImplTest {
     public void createUserTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
 
         User testUser = modelMapper.map(createUserDto, User.class);
         testUser.setRegistrationDate(LocalDate.now());
@@ -145,7 +148,7 @@ class UserServiceImplTest {
         int customUserId = 1;
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         User testUser = modelMapper.map(createUserDto, User.class);
         testUser.setRegistrationDate(LocalDate.now());
 

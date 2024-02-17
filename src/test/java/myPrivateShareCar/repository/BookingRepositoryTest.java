@@ -34,14 +34,14 @@ class BookingRepositoryTest {
     public void createUsersAndCars() {
         CreateUserDto createOwnerDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"));
+                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
         owner = new ModelMapper().map(createOwnerDto, User.class);
         owner.setRegistrationDate(LocalDate.now());
         userRepository.save(owner);
 
         CreateUserDto createUserDto = new CreateUserDto("Пётр", "Петров", "petr@petrov.ru",
                 LocalDate.of(2005, 5, 5), new Passport("2345", "456789",
-                LocalDate.of(2019, 8, 3), "МВД №5"));
+                LocalDate.of(2019, 8, 3), "МВД №5"), "password2");
         user = new ModelMapper().map(createUserDto, User.class);
         user.setRegistrationDate(LocalDate.now());
         userRepository.save(user);
