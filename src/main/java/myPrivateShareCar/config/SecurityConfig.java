@@ -26,7 +26,7 @@ public class SecurityConfig {
         return http
 //                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // todo реквестМатчер не принимает строку. Применен new AntPathRequestMatcher
+                        // todo реквестМатчер не принимает строку. Применён new AntPathRequestMatcher
                         .anyRequest().permitAll())
                 .build();
     }
