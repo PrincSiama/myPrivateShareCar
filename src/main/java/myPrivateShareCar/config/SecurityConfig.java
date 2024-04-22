@@ -1,10 +1,14 @@
 package myPrivateShareCar.config;
 
-import myPrivateShareCar.service.UserDetailServiceImpl;
+import lombok.RequiredArgsConstructor;
+import myPrivateShareCar.model.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,29 +20,29 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailServiceImpl();
-    }
+    private final UserDetailsService userDetailsService;
 
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-//                 .csrf(AbstractHttpConfigurer::disable)
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        // todo реквестМатчер не принимает строку. Применён new AntPathRequestMatcher
-                        .anyRequest().permitAll())
+                                .antMatchers(HttpMethod.POST, "/users").permitAll()
+                                .antMatchers(HttpMethod.GET, "/cars/search", "/cars/{carId}/review")
+                                    .permitAll()
+                                .antMatchers(HttpMethod.DELETE, "/cars/{id}").hasRole(Role.OWNER.name())
+                                .antMatchers(HttpMethod.GET, "/cars", "/booking/owner")
+                                    .hasRole(Role.OWNER.name())
+                                .antMatchers(HttpMethod.PUT, "/cars/{id}").hasRole(Role.OWNER.name())
+                                .anyRequest().authenticated())
+//                .httpBasic(withDefaults())
+//                .formLogin(withDefaults())
+//                .authenticationManager(authenticationManager(new AuthenticationConfiguration()))
+//                .authenticationProvider(authenticationProvider())
                 .build();
     }
-
-
-    /*.requestMatchers(new AntPathRequestMatcher("/users/create")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/cars/search")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/users/**")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/cars/**")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/booking/**")).authenticated())
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-                .build();*/
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,9 +52,15 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
+        return authConfiguration.getAuthenticationManager();
+
     }
 
 /*http.cors().and().csrf().disable()

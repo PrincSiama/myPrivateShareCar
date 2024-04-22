@@ -7,7 +7,7 @@ import myPrivateShareCar.model.User;
 
 public interface UserService {
     User create(CreateUserDto createUserDto);
-    User update(int id, JsonPatch jsonPatch);
-    void delete(int id);
+    User update(JsonPatch jsonPatch);
+    void delete();
     UserDto getById(int id);
 }

@@ -13,6 +13,8 @@ import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserDetailsService userDetailsService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
@@ -35,9 +38,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(int id, JsonPatch jsonPatch) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Невозможно обновить" + " пользователя. Пользователь с id " + id + " не найден"));
+    public User update(JsonPatch jsonPatch) {
+        /*String email = getEmailFromAuth();
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException("Невозможно обновить" +
+                        " пользователя. Пользователь с email " + email + " не найден"));*/
+        User user = getUserFromAuth();
         try {
             JsonNode jsonNode = objectMapper.convertValue(user, JsonNode.class);
             JsonNode patched = jsonPatch.apply(jsonNode);
@@ -49,12 +55,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(int id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
+    public void delete() {
+        userRepository.deleteById(getUserFromAuth().getId());
+        /*if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            userRepository.deleteByEmail(email);
         } else {
-            throw new NotFoundException("Невозможно удалить пользователя. Пользователь с id " + id + " не найден");
-        }
+            throw new NotFoundException("Невозможно удалить пользователя. Пользователь с email " + email + " не найден");
+        }*/
     }
 
     @Override
@@ -63,5 +70,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Невозможно получить пользователя. Пользователь с id " + id +
                         " не найден"));
         return mapper.map(user, UserDto.class);
+    }
+
+    /*private User getUserFromAuth() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+    }*/
+    private User getUserFromAuth() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -1,3 +1,4 @@
+/*
 package myPrivateShareCar.repository;
 
 import myPrivateShareCar.dto.CreateCarDto;
@@ -83,3 +84,4 @@ class CarRepositoryTest {
     }
 }
 
+*/

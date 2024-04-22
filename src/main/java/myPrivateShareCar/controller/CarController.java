@@ -8,7 +8,6 @@ import myPrivateShareCar.model.Car;
 import myPrivateShareCar.service.CarService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,16 +21,16 @@ public class CarController {
     private final CarService carService;
 
     @PostMapping
-    public Car create(@RequestBody @Valid CreateCarDto createCarDto,
-                      @RequestHeader(value = "X-Owner-Id") int ownerId) {
-        return carService.create(ownerId, createCarDto);
+    public Car create(@RequestBody @Valid CreateCarDto createCarDto) {
+        /*UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = userDetails.getUsername();*/
+        return carService.create(createCarDto);
     }
 
     @DeleteMapping("/{carId}")
-    @PreAuthorize("hasAuthority('ROLE_OWNER')")
-    public void delete(@PathVariable int carId,
-                       @RequestHeader(value = "X-Owner-Id") int ownerId) {
-        carService.delete(ownerId, carId);
+//    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public void delete(@PathVariable int carId) {
+        carService.delete(carId);
     }
 
     @GetMapping("/{carId}")
@@ -40,11 +39,10 @@ public class CarController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_OWNER')")
-    public List<CarDto> getOwnerCars(@RequestHeader(value = "X-Owner-Id") int ownerId,
-                                     @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+//    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public List<CarDto> getOwnerCars(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                      @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        return carService.getOwnerCars(ownerId, PageRequest.of(page, size));
+        return carService.getOwnerCars(PageRequest.of(page, size));
     }
 
     @GetMapping("/search")
@@ -59,11 +57,10 @@ public class CarController {
     }
 
     @PutMapping("/{carId}")
-    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+//    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public void updatePrice(@RequestBody @Valid PriceDto priceDto,
-                            @PathVariable int carId,
-                            @RequestHeader(value = "X-Owner-Id") int ownerId) {
-        carService.updatePrice(carId, ownerId, priceDto.getPricePerDay());
+                            @PathVariable int carId) {
+        carService.updatePrice(carId, priceDto.getPricePerDay());
     }
 
 }

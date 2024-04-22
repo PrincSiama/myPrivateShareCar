@@ -1,3 +1,4 @@
+/*
 package myPrivateShareCar.config;
 
 import myPrivateShareCar.model.User;
@@ -53,3 +54,4 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 }
+*/

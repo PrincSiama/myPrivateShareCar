@@ -21,20 +21,22 @@ public class UserController {
         return userService.create(createUserDto);
     }
 
-    @PatchMapping("/{id}")
-    public User update(@PathVariable int id,
-                       @RequestBody @Valid JsonPatch jsonPatch) {
-        return userService.update(id, jsonPatch);
+    @PatchMapping() //todo изменился путь. убрал {id}
+    // todo проверить тесты
+    public User update(@RequestBody @Valid JsonPatch jsonPatch) {
+        return userService.update(jsonPatch);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {
-        userService.delete(id);
+    @DeleteMapping() //todo изменился путь. убрал {id}
+    // todo проверить тесты
+    public void delete() {
+        userService.delete();
     }
 
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable int id) {
         return userService.getById(id);
     }
+
 
 }
