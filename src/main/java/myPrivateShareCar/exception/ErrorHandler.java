@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.Objects;
 
@@ -61,6 +62,13 @@ public class ErrorHandler {
     public ErrorResponse handleUpdateException(NotUpdatedException e) {
         e.printStackTrace();
         return new ErrorResponse("Невозможно обновить. ", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHandlerMethodValidationException(HandlerMethodValidationException e) {
+        e.printStackTrace();
+        return new ErrorResponse("Даты бронирования должны быть в будущем", e.getMessage());
     }
 
     @ExceptionHandler

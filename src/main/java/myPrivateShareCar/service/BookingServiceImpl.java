@@ -2,6 +2,7 @@ package myPrivateShareCar.service;
 
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.BookingDto;
+import myPrivateShareCar.dto.CreateBookingDto;
 import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.PermissionDeniedException;
@@ -11,9 +12,9 @@ import myPrivateShareCar.model.Car;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
-import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,51 +25,55 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final CarRepository carRepository;
-    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final ModelMapper mapper;
 
     @Override
-    public BookingDto create(int userId, int carId, LocalDate startRent, int durationRent) {
-        LocalDate endRent = startRent.plusDays(durationRent);
-        Car car = carRepository.findById(carId)
+    public BookingDto create(CreateBookingDto createBookingDto) {
+        Car car = carRepository.findById(createBookingDto.getCarId())
                 .orElseThrow(() -> new NotFoundException("Невозможно создать бронирование. " +
-                        "Автомобиль с id " + carId + " не найден"));
-        User user = userRepository.findById(userId).filter(user1 -> user1.getDriverLicense().getSeries() != null)
-                .orElseThrow(() -> new NotCreatedException("Невозможно создать бронирование автомобиля." +
-                        " У пользователь с id " + userId + " отсутствует информация о водительском удостоверении"));
+                        "Автомобиль с id " + createBookingDto.getCarId() + " не найден"));
 
-        if (bookingRepository.bookingByRentDate(carId, startRent, endRent).isEmpty()) {
-            return mapper.map(bookingRepository.save(new Booking(user, car, startRent, durationRent, endRent)),
-                    BookingDto.class);
+        User user = getUserFromAuth();
+        if (user.getDriverLicense().getSeries() == null) {
+            throw new NotCreatedException("Невозможно создать бронирование автомобиля." +
+                    " У пользователь с id " + user.getId() + " отсутствует информация о водительском удостоверении");
         }
-        throw new NotCreatedException("Невозможно создать бронирование автомобиля с id " + carId + "." +
+
+        LocalDate endRent = createBookingDto.getStartRent().plusDays(createBookingDto.getDurationRentInDays());
+        if (bookingRepository.bookingByRentDate(car.getId(), createBookingDto.getStartRent(), endRent).isEmpty()) {
+            return mapper.map(bookingRepository.save(new Booking(user, car, createBookingDto.getStartRent(),
+                    createBookingDto.getDurationRentInDays(), endRent)), BookingDto.class);
+        }
+        throw new NotCreatedException("Невозможно создать бронирование автомобиля с id " + car.getId() + "." +
                 " Автомобиль уже забронирован на указанные даты");
     }
 
     @Override
-    public BookingDto changeStatus(int ownerId, int bookingId, BookingStatus status) {
+    public BookingDto changeStatus(int bookingId, BookingStatus status) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
                         "Бронирование с id " + bookingId + " не найдено"));
         Car car = carRepository.findById(booking.getCar().getId())
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
                         "Автомобиль с id " + booking.getCar().getId() + " не найден"));
-        if (ownerId == car.getOwnerId()) {
+        User user = getUserFromAuth();
+        if (user.getId() == car.getOwnerId()) {
             booking.setBookingStatus(status);
             return mapper.map(bookingRepository.save(booking), BookingDto.class);
         }
         throw new PermissionDeniedException("Невозможно подтвердить бронирование с id " + bookingId + ". " +
-                "Подтвердить может только владелец. Пользователь с id " + ownerId + " не является владельцем автомобиля"
-                + " с id " + car.getId());
+                "Подтвердить может только владелец. Пользователь с id " + user.getId() + " не является владельцем"
+                + " автомобиля с id " + car.getId());
     }
 
     @Override
-    public BookingDto getBookingById(int bookingId, int userId) {
+    public BookingDto getBookingById(int bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно получить информацию о бронировании. " +
                         "Бронирование с id " + bookingId + " не найдено"));
-        if (userId == booking.getUser().getId() || userId == booking.getCar().getOwnerId()) {
+        User user = getUserFromAuth();
+        if (user.getId() == booking.getUser().getId() || user.getId() == booking.getCar().getOwnerId()) {
             return mapper.map(booking, BookingDto.class);
         }
         throw new PermissionDeniedException("Невозможно получить информацию о бронировании с id " + bookingId +
@@ -76,43 +81,39 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserBookings(int userId, BookingStatus status) {
+    public List<BookingDto> getUserBookings(BookingStatus status) {
         List<Booking> bookings;
-        if (userRepository.existsById(userId)) {
-            if (status == null) {
-                bookings = bookingRepository.findByUser_IdOrderByStartRentAsc(userId);
-            } else {
-                bookings = bookingRepository
-                        .findAllByUser_IdAndBookingStatusOrderByStartRentAsc(userId, status);
-            }
+        User user = getUserFromAuth();
+        if (status == null) {
+            bookings = bookingRepository.findByUser_IdOrderByStartRentAsc(user.getId());
         } else {
-            throw new NotFoundException("Невозможно получить список бронирований. " +
-                    "Пользователь с id " + userId + " не найден");
+            bookings = bookingRepository
+                    .findAllByUser_IdAndBookingStatusOrderByStartRentAsc(user.getId(), status);
         }
         return bookings.stream()
                 .map(booking -> mapper.map(booking, BookingDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto> getOwnerBookings(int ownerId, BookingStatus status) {
+    public List<BookingDto> getOwnerBookings(BookingStatus status) {
         List<Booking> bookings;
-        if (userRepository.existsById(ownerId)) {
-            if (!carRepository.findByOwnerId(ownerId, Pageable.unpaged()).isEmpty()) {
-                if (status == null) {
-                    bookings = bookingRepository.findAllByCar_OwnerIdOrderByStartRentAsc(ownerId);
-                } else {
-                    bookings = bookingRepository.findAllByCar_OwnerIdAndBookingStatusOrderByStartRentAsc(ownerId,
-                            status);
-                }
+        User user = getUserFromAuth();
+        if (!carRepository.findByOwnerId(user.getId(), Pageable.unpaged()).isEmpty()) {
+            if (status == null) {
+                bookings = bookingRepository.findAllByCar_OwnerIdOrderByStartRentAsc(user.getId());
             } else {
-                throw new PermissionDeniedException("Невозможно получить список бронирований. " +
-                        "У пользователя с id " + ownerId + " отсутствуют автомобили для аренды");
+                bookings = bookingRepository.findAllByCar_OwnerIdAndBookingStatusOrderByStartRentAsc(user.getId(),
+                        status);
             }
         } else {
-            throw new NotFoundException("Невозможно получить список бронирований. " +
-                    "Пользователь с id " + ownerId + " не найден");
+            throw new PermissionDeniedException("Невозможно получить список бронирований. " +
+                    "У пользователя с id " + user.getId() + " отсутствуют автомобили для аренды");
         }
         return bookings.stream()
                 .map(booking -> mapper.map(booking, BookingDto.class)).collect(Collectors.toList());
+    }
+
+    private User getUserFromAuth() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

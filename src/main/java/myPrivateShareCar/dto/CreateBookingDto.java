@@ -1,9 +1,9 @@
 package myPrivateShareCar.dto;
 
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @Data

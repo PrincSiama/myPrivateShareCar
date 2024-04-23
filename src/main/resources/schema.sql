@@ -8,7 +8,7 @@ email varchar(100) not null unique,
 birthday date,
 registration_date date,
 password varchar(255) not null,
-role varchar(100) default 'user'
+role varchar(50) not null default 'user'
 );
 
 														-- CARS

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.11</version>
+		<version>3.2.3</version>
 		<relativePath/>
 	</parent>
 	<groupId>dev.sosnovsky</groupId>
@@ -15,9 +15,9 @@
 	<description>car rental service for people</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<model.mapper.version>3.1.1</model.mapper.version>
-		<json-patch.version>1.9</json-patch.version>
+		<json-patch.version>1.13</json-patch.version>
 	</properties>
 
 	<dependencies>
@@ -30,7 +30,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.fge</groupId>
+			<groupId>com.github.java-json-tools</groupId>
 			<artifactId>json-patch</artifactId>
 			<version>${json-patch.version}</version>
 		</dependency>

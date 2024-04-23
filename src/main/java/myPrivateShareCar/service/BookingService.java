@@ -1,16 +1,16 @@
 package myPrivateShareCar.service;
 
 import myPrivateShareCar.dto.BookingDto;
+import myPrivateShareCar.dto.CreateBookingDto;
 import myPrivateShareCar.model.BookingStatus;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingService {
-    BookingDto create(int userId, int carId, LocalDate startRent, int durationRent);
-    BookingDto changeStatus(int ownerId, int bookingId, BookingStatus status);
-    BookingDto getBookingById(int bookingId, int userId);
-    List<BookingDto> getUserBookings(int userId, BookingStatus status);
-    List<BookingDto> getOwnerBookings(int ownerId, BookingStatus status);
+    BookingDto create(CreateBookingDto createBookingDto);
+    BookingDto changeStatus(int bookingId, BookingStatus status);
+    BookingDto getBookingById(int bookingId);
+    List<BookingDto> getUserBookings(BookingStatus status);
+    List<BookingDto> getOwnerBookings(BookingStatus status);
 
 }

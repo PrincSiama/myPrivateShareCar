@@ -16,8 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,7 +32,6 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-    private final UserDetailsService userDetailsService;
     private final ModelMapper mapper;
 
     @Override
@@ -96,8 +93,8 @@ public class CarServiceImpl implements CarService {
             car.setPricePerDay(pricePerDay);
             carRepository.save(car);
         } else {
-            throw new PermissionDeniedException("Невозможно установить цену аренды на автомобиль с id " + carId +
-                    ". Установить цену может только владелец. Пользователь с id " + user.getId() + " не является"
+            throw new PermissionDeniedException("Невозможно установить стоимость аренды на автомобиль с id " + carId +
+                    ". Установить стоимость может только владелец. Пользователь с id " + user.getId() + " не является"
                     + " владельцем автомобиля с id " + carId);
         }
     }
@@ -115,7 +112,6 @@ public class CarServiceImpl implements CarService {
     }
 
     private User getUserFromAuth() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

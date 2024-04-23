@@ -10,9 +10,9 @@ import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.ReviewRepository;
-import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +25,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
     private final CarRepository carRepository;
-    private final UserRepository userRepository;
     private final ModelMapper mapper;
 
     @Override
@@ -39,21 +38,24 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDto addReview(int carId, int userId, String text) {
+    public ReviewDto addReview(int carId, String text) {
+        User user = getUserFromAuth();
         Car car = carRepository.findById(carId)
-                .orElseThrow(() -> new NotFoundException("Невозможно добавить отзыв пользователя с id " + userId +
+                .orElseThrow(() -> new NotFoundException("Невозможно добавить отзыв пользователя с id " + user.getId() +
                         " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
                         " бронирования для данного автомобиля"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Введены неверные данные. " +
-                        "Невозможно найти пользователя с id " + userId));
-        if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusIn(userId, carId,
+
+        if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusIn(user.getId(), carId,
                 List.of(BookingStatus.APPROVED, BookingStatus.FINISHED)).isEmpty()) {
             return mapper.map(reviewRepository.save(new Review(car, user, text, LocalDate.now())), ReviewDto.class);
         } else {
-            throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + userId +
+            throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + user.getId() +
                     " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
                     " бронирования для данного автомобиля");
         }
+    }
+
+    private User getUserFromAuth() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

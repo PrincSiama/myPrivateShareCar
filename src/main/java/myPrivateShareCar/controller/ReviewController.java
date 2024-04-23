@@ -17,9 +17,8 @@ public class ReviewController {
 
     @PostMapping
     public ReviewDto addReview(@PathVariable int carId,
-                               @RequestHeader(value = "X-User-Id") int userId,
                                @RequestBody AddReviewDto addReviewDto) {
-        return reviewService.addReview(carId, userId, addReviewDto.getText());
+        return reviewService.addReview(carId, addReviewDto.getText());
     }
 
     @GetMapping

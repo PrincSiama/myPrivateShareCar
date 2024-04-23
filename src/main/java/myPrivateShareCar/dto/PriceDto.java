@@ -1,8 +1,8 @@
 package myPrivateShareCar.dto;
 
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
-import javax.validation.constraints.Min;
 
 @Data
 public class PriceDto {

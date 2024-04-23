@@ -1,11 +1,12 @@
 package myPrivateShareCar.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class User implements UserDetails {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
     @PrimaryKeyJoinColumn
@@ -57,8 +59,25 @@ public class User implements UserDetails {
         }
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", birthday=" + birthday +
+                ", password='" + password + '\'' +
+                ", role=" + role + '\'' +
+                ", passport=" + passport.getSeries() + " " + passport.getNumber() + " " + passport.getDateOfIssue() +
+                " " + passport.getIssuedBy() + '\'' +
+                ", driverLicense=" + driverLicense.getSeries() + " " + driverLicense.getNumber() +
+                " " + driverLicense.getDateOfIssue() + " " + driverLicense.getIssuedBy() + '\'' +
+                ", registrationDate=" + registrationDate +
+                '}';
+    }
 
-
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Stream.of(getRole().toString())
@@ -66,31 +85,37 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return email;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;

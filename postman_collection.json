@@ -8,6 +8,9 @@
 	"item": [
 		{
 			"name": "create user1",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
 			"request": {
 				"method": "POST",
 				"header": [
@@ -15,16 +18,11 @@
 						"key": "Content-Type",
 						"value": "application/json",
 						"type": "text"
-					},
-					{
-						"key": "Accept",
-						"value": "*/*",
-						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\": \"user1\",\r\n    \"lastname\": \"lastname1\",\r\n    \"email\": \"user1@user.com\",\r\n    \"birthday\": \"2001-09-03\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1234\",\r\n        \"number\": \"123456\",\r\n        \"dateOfIssue\": \"2015-10-10\",\r\n        \"issuedBy\": \"УВД ЦАО №2 по области\"\r\n    }\r\n}"
+					"raw": "{\r\n    \"firstname\": \"user1\",\r\n    \"lastname\": \"lastname1\",\r\n    \"email\": \"user1@user.com\",\r\n    \"birthday\": \"2001-09-03\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1234\",\r\n        \"number\": \"123456\",\r\n        \"dateOfIssue\": \"2015-10-10\",\r\n        \"issuedBy\": \"УВД ЦАО №2 по области\"\r\n    },\r\n    \"password\": \"password1\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users",
@@ -56,7 +54,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\": \"user2\",\r\n    \"lastname\": \"lastname2\",\r\n    \"email\": \"user2@user.com\",\r\n    \"birthday\": \"2000-05-11\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"9876\",\r\n        \"number\": \"543210\",\r\n        \"dateOfIssue\": \"2019-02-11\",\r\n        \"issuedBy\": \"УВД ЛАО №6 по области\"\r\n    }\r\n}"
+					"raw": "{\r\n    \"firstname\": \"user2\",\r\n    \"lastname\": \"lastname2\",\r\n    \"email\": \"user2@user.com\",\r\n    \"birthday\": \"2000-05-11\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"9876\",\r\n        \"number\": \"543210\",\r\n        \"dateOfIssue\": \"2019-02-11\",\r\n        \"issuedBy\": \"УВД ЛАО №6 по области\"\r\n    },\r\n    \"driverLicense\":\r\n    {\r\n        \"series\": \"1536\",\r\n        \"number\": \"338860\",\r\n        \"dateOfIssue\": \"2022-12-04\",\r\n        \"issuedBy\": \"ГИБДД №1 по СПБ\"\r\n    },\r\n    \"password\": \"password2\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users",
@@ -88,7 +86,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstname\": \"user3\",\r\n    \"lastname\": \"lastname3\",\r\n    \"email\": \"user3@user.com\",\r\n    \"birthday\": \"2012-05-05\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1212\",\r\n        \"number\": \"121212\",\r\n        \"dateOfIssue\": \"2012-12-12\",\r\n        \"issuedBy\": \"УВД ВАО №12\"\r\n    }\r\n}"
+					"raw": "{\r\n    \"firstname\": \"user3\",\r\n    \"lastname\": \"lastname3\",\r\n    \"email\": \"user3@user.com\",\r\n    \"birthday\": \"2012-05-05\",\r\n    \"passport\":\r\n    {\r\n        \"series\": \"1212\",\r\n        \"number\": \"121212\",\r\n        \"dateOfIssue\": \"2012-12-12\",\r\n        \"issuedBy\": \"УВД ВАО №12\"\r\n    },\r\n    \"password\": \"password3\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/users",
@@ -105,6 +103,21 @@
 		{
 			"name": "create car1",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user1@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -120,12 +133,13 @@
 					{
 						"key": "X-Owner-Id",
 						"value": "3",
-						"type": "text"
+						"type": "text",
+						"disabled": true
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"brand\": \"Honda\",\r\n    \"model\": \"S2000\",\r\n    \"yearOfManufacture\": \"1998\",\r\n    \"color\": \"red\",\r\n    \"documentNumber\": \"33937\",\r\n    \"registrationNumber\": \"С200ХХ177\"\r\n}"
+					"raw": "{\r\n    \"brand\": \"Honda\",\r\n    \"model\": \"S2000\",\r\n    \"yearOfManufacture\": \"1998\",\r\n    \"color\": \"red\",\r\n    \"documentNumber\": \"33937\",\r\n    \"registrationNumber\": \"С200ХХ177\",\r\n    \"pricePerDay\": \"1500\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/cars",
@@ -142,6 +156,21 @@
 		{
 			"name": "create car2",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -162,7 +191,59 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"brand\": \"BMW\",\r\n    \"model\": \"530\",\r\n    \"yearOfManufacture\": \"2019\",\r\n    \"color\": \"white\",\r\n    \"documentNumber\": \"88188\",\r\n    \"registrationNumber\": \"А530АА53\"\r\n}"
+					"raw": "{\r\n    \"brand\": \"BMW\",\r\n    \"model\": \"530\",\r\n    \"yearOfManufacture\": \"2019\",\r\n    \"color\": \"white\",\r\n    \"documentNumber\": \"88188\",\r\n    \"registrationNumber\": \"А530АА53\",\r\n    \"pricePerDay\": \"2500\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cars",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create car3",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					},
+					{
+						"key": "X-Owner-Id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"brand\": \"Audi\",\r\n    \"model\": \"A6\",\r\n    \"yearOfManufacture\": \"2021\",\r\n    \"color\": \"black\",\r\n    \"documentNumber\": \"316991\",\r\n    \"registrationNumber\": \"А006АА06\",\r\n    \"pricePerDay\": \"3500\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/cars",
@@ -179,6 +260,21 @@
 		{
 			"name": "update user1",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user1@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PATCH",
 				"header": [
 					{
@@ -194,16 +290,62 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n    {\"op\": \"add\", \"path\": \"/driverLicense\", \"value\": {\r\n        \"series\" : \"1234\",\r\n        \"number\" : \"567890\",\r\n        \"dateOfIssue\" : \"2015-05-05\",\r\n        \"issuedBy\" : \"ГАИ 5555\"\r\n    }}\r\n]"
+					"raw": "[\r\n    {\"op\": \"add\", \"path\": \"/driverLicense\", \"value\": {\r\n        \"series\" : \"4321\",\r\n        \"number\" : \"990078\",\r\n        \"dateOfIssue\" : \"2019-05-15\",\r\n        \"issuedBy\" : \"ГАИ 78\"\r\n    }}\r\n]"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/users/1",
+					"raw": "{{baseUrl}}/users",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"users",
-						"1"
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user2",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password2",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user2@user.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "*/*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"op\": \"replace\",\r\n    \"path\": \"/lastname\",\r\n    \"value\": \"lastname2 update\"\r\n  }\r\n]"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
 					]
 				}
 			},
@@ -212,6 +354,21 @@
 		{
 			"name": "get user by id",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -226,13 +383,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/users/2",
+					"raw": "{{baseUrl}}/users/1",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"2"
+						"1"
 					]
 				}
 			},
@@ -241,6 +398,21 @@
 		{
 			"name": "delete user by id",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password4",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user4@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [
 					{
@@ -255,13 +427,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/users/2",
+					"raw": "{{baseUrl}}/users",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"users",
-						"2"
+						"users"
 					]
 				}
 			},
@@ -270,6 +441,21 @@
 		{
 			"name": "get car by id",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -299,6 +485,21 @@
 		{
 			"name": "get owner cars",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -309,11 +510,6 @@
 					{
 						"key": "Accept",
 						"value": "*/*",
-						"type": "text"
-					},
-					{
-						"key": "X-Owner-Id",
-						"value": "3",
 						"type": "text"
 					}
 				],
@@ -324,6 +520,18 @@
 					],
 					"path": [
 						"cars"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "size",
+							"value": "1",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -332,6 +540,9 @@
 		{
 			"name": "search",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -346,7 +557,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/search",
+					"raw": "{{baseUrl}}/cars/search?startRent=2024-12-26&endRent=2024-12-30",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -357,18 +568,16 @@
 					"query": [
 						{
 							"key": "text",
-							"value": "ond",
+							"value": "bla",
 							"disabled": true
 						},
 						{
 							"key": "startRent",
-							"value": "2023-12-26",
-							"disabled": true
+							"value": "2024-12-26"
 						},
 						{
 							"key": "endRent",
-							"value": "2023-12-30",
-							"disabled": true
+							"value": "2024-12-30"
 						}
 					]
 				}
@@ -378,6 +587,21 @@
 		{
 			"name": "delete car by id",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [
 					{
@@ -389,21 +613,16 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-Owner-Id",
-						"value": "3",
-						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/2",
+					"raw": "{{baseUrl}}/cars/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"2"
+						"3"
 					]
 				}
 			},
@@ -412,6 +631,21 @@
 		{
 			"name": "create booking",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password2",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user2@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -423,16 +657,11 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-User-Id",
-						"value": "1",
-						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"carId\": \"1\",\r\n    \"startRent\": \"2024-01-01\",\r\n    \"durationRentInDays\": 5\r\n}"
+					"raw": "{\r\n    \"carId\": \"4\",\r\n    \"startRent\": \"2024-07-15\",\r\n    \"durationRentInDays\": 5\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/booking",
@@ -489,6 +718,21 @@
 		{
 			"name": "get booking by id",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user1@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -499,11 +743,6 @@
 					{
 						"key": "Accept",
 						"value": "*/*",
-						"type": "text"
-					},
-					{
-						"key": "X-User-Id",
-						"value": "1",
 						"type": "text"
 					}
 				],
@@ -523,6 +762,21 @@
 		{
 			"name": "get user bookings",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password2",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user2@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -534,15 +788,10 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-User-Id",
-						"value": "1",
-						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/booking?status=APPROVED",
+					"raw": "{{baseUrl}}/booking?status=REJECTED ",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -552,7 +801,8 @@
 					"query": [
 						{
 							"key": "status",
-							"value": "APPROVED"
+							"value": "REJECTED ",
+							"description": "APPROVED, REJECTED or WAITING"
 						}
 					]
 				}
@@ -562,6 +812,21 @@
 		{
 			"name": "get owner bookings",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password3",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user3@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -573,15 +838,10 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-Owner-Id",
-						"value": "3",
-						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/booking/owner",
+					"raw": "{{baseUrl}}/booking/owner?status=WAITING",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -593,7 +853,7 @@
 						{
 							"key": "status",
 							"value": "WAITING",
-							"disabled": true
+							"description": "APPROVED, REJECTED or WAITING"
 						}
 					]
 				}
@@ -603,6 +863,21 @@
 		{
 			"name": "add review",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password2",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user2@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -614,25 +889,20 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-User-Id",
-						"value": "1",
-						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"text\": \"Отличный автомобиль!\"\r\n}"
+					"raw": "{\r\n    \"text\": \"Аудюха бомба!\"\r\n}"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/cars/1/review",
+					"raw": "{{baseUrl}}/cars/4/review",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"1",
+						"4",
 						"review"
 					],
 					"query": [
@@ -663,13 +933,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/1/review?page=0&size=3",
+					"raw": "{{baseUrl}}/cars/4/review?page=0&size=3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"1",
+						"4",
 						"review"
 					],
 					"query": [
@@ -689,6 +959,21 @@
 		{
 			"name": "update price",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user1@user.com",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [
 					{
@@ -700,16 +985,11 @@
 						"key": "Accept",
 						"value": "*/*",
 						"type": "text"
-					},
-					{
-						"key": "X-Owner-Id",
-						"value": "3",
-						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pricePerDay\": \"2500\"\r\n}"
+					"raw": "{\r\n    \"pricePerDay\": \"1500\"\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/cars/1",

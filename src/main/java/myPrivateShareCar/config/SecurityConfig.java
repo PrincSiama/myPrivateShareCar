@@ -6,16 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -26,22 +27,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf().disable()
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .antMatchers(HttpMethod.POST, "/users").permitAll()
-                                .antMatchers(HttpMethod.GET, "/cars/search", "/cars/{carId}/review")
-                                    .permitAll()
-                                .antMatchers(HttpMethod.DELETE, "/cars/{id}").hasRole(Role.OWNER.name())
-                                .antMatchers(HttpMethod.GET, "/cars", "/booking/owner")
-                                    .hasRole(Role.OWNER.name())
-                                .antMatchers(HttpMethod.PUT, "/cars/{id}").hasRole(Role.OWNER.name())
-                                .anyRequest().authenticated())
-//                .httpBasic(withDefaults())
-//                .formLogin(withDefaults())
-//                .authenticationManager(authenticationManager(new AuthenticationConfiguration()))
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cars/search", "/cars/{carId}/review")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/cars/{id}").hasAuthority(Role.OWNER.name())
+                        .requestMatchers(HttpMethod.GET, "/cars", "/booking/owner")
+                        .hasAuthority(Role.OWNER.name())
+                        .requestMatchers(HttpMethod.PUT, "/cars/{id}").hasAuthority(Role.OWNER.name())
+                        .anyRequest().authenticated())
+                .httpBasic(withDefaults())
+                .formLogin(withDefaults())
+                .logout(withDefaults());
+//                .authenticationManager(authenticationManager(new AuthenticationConfiguration()));
 //                .authenticationProvider(authenticationProvider())
-                .build();
+        return http.build();
     }
 
     @Bean
@@ -49,13 +51,13 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+  /*  @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
-    }
+    }*/
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {

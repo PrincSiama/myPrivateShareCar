@@ -21,10 +21,15 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     List<Booking> findAllByUserIdAndCarIdAndBookingStatusIn(int userId, int carId,
                                                             List<BookingStatus> bookingStatuses);
 
-    @Query("select b from Booking b" +
-            " where b.car.id = ?1 and b.bookingStatus = 'APPROVED' and" +
-            " ((?3 >= b.startRent and ?2 <= b.endRent) or " +
-            "(?2 between b.startRent and b.endRent and ?3 between b.startRent and b.endRent))")
+    @Query("SELECT b " +
+            "FROM Booking b " +
+            "WHERE b.bookingStatus = 'APPROVED' AND b.endRent < CURRENT_DATE")
+    List<Booking> findAllByApprovedBookingStatusAndEndRentBeforeNow();
+
+    @Query("SELECT b FROM Booking b " +
+            "WHERE b.car.id = ?1 AND b.bookingStatus = 'APPROVED' AND " +
+            "((?3 >= b.startRent AND ?2 <= b.endRent) OR " +
+            "(?2 BETWEEN b.startRent AND b.endRent AND ?3 BETWEEN b.startRent AND b.endRent))")
     List<Booking> bookingByRentDate(int carId, LocalDate startRent, LocalDate endRent);
 
 }
