@@ -7,6 +7,7 @@ import myPrivateShareCar.service.ReviewService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -17,8 +18,9 @@ public class ReviewController {
 
     @PostMapping
     public ReviewDto addReview(@PathVariable int carId,
-                               @RequestBody AddReviewDto addReviewDto) {
-        return reviewService.addReview(carId, addReviewDto.getText());
+                               @RequestBody AddReviewDto addReviewDto,
+                               Principal principal) {
+        return reviewService.addReview(carId, addReviewDto.getText(), principal);
     }
 
     @GetMapping

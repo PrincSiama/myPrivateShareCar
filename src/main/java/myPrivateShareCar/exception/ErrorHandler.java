@@ -66,6 +66,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleTokenException(TokenException e) {
+        e.printStackTrace();
+        return new ErrorResponse("Токен некорректен", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         e.printStackTrace();
         return new ErrorResponse("Даты бронирования должны быть в будущем", e.getMessage());

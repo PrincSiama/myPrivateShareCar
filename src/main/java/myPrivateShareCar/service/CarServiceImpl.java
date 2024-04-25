@@ -15,9 +15,9 @@ import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +32,12 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final UserPrincipalService userPrincipalService;
     private final ModelMapper mapper;
 
     @Override
-    public Car create(CreateCarDto createCarDto) {
-        /*User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new NotCreatedException("Невозможно создать автомобиль. Владелец с email " + email + " не найден"));*/
-        User user = getUserFromAuth();
+    public Car create(CreateCarDto createCarDto, Principal principal) {
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         Car car = mapper.map(createCarDto, Car.class);
         car.setOwnerId(user.getId());
         user.setRole(Role.OWNER);
@@ -47,11 +46,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void delete(int carId) {
+    public void delete(int carId, Principal principal) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new NotFoundException("Невозможно удалить автомобиль. Автомобиль с id " + carId +
                         " не найден"));
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getId() == car.getOwnerId()) {
             carRepository.deleteById(carId);
         } else {
@@ -70,8 +69,8 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDto> getOwnerCars(Pageable pageable) {
-        User user = getUserFromAuth();
+    public List<CarDto> getOwnerCars(Pageable pageable, Principal principal) {
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         return carRepository.findByOwnerId(user.getId(), pageable).stream()
                 .map(car -> mapper.map(car, CarDto.class)).collect(Collectors.toList());
     }
@@ -85,10 +84,10 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void updatePrice(int carId, int pricePerDay) {
+    public void updatePrice(int carId, int pricePerDay, Principal principal) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new NotFoundException("Автомобиль с id " + carId + " не найден"));
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getId() == car.getOwnerId()) {
             car.setPricePerDay(pricePerDay);
             carRepository.save(car);
@@ -109,9 +108,5 @@ public class CarServiceImpl implements CarService {
 
         return specifications.stream().filter(Objects::nonNull).reduce(Specification::and)
                 .orElse((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
-    }
-
-    private User getUserFromAuth() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

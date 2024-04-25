@@ -9,6 +9,8 @@ import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -22,14 +24,15 @@ public class UserController {
 
     @PatchMapping() //todo изменился путь. убрал {id}
     // todo проверить тесты
-    public FullUserDto update(@RequestBody @Valid JsonPatch jsonPatch) {
-        return userService.update(jsonPatch);
+    public FullUserDto update(@RequestBody @Valid JsonPatch jsonPatch,
+                              Principal principal) {
+        return userService.update(jsonPatch, principal);
     }
 
     @DeleteMapping() //todo изменился путь. убрал {id}
     // todo проверить тесты
-    public void delete() {
-        userService.delete();
+    public void delete(Principal principal) {
+        userService.delete(principal);
     }
 
     @GetMapping("/{id}")

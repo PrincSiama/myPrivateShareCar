@@ -14,16 +14,17 @@ import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserPrincipalService userPrincipalService;
     private final ModelMapper mapper;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
@@ -37,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public FullUserDto update(JsonPatch jsonPatch) {
-        User user = getUserFromAuth();
+    public FullUserDto update(JsonPatch jsonPatch, Principal principal) {
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         try {
             JsonNode jsonNode = objectMapper.convertValue(user, JsonNode.class);
             JsonNode patched = jsonPatch.apply(jsonNode);
@@ -51,8 +52,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete() {
-        userRepository.deleteById(getUserFromAuth().getId());
+    public void delete(Principal principal) {
+        User user = userPrincipalService.getUserFromPrincipal(principal);
+        userRepository.deleteById(user.getId());
     }
 
     @Override
@@ -61,9 +63,5 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Невозможно получить пользователя. Пользователь с id " + id +
                         " не найден"));
         return mapper.map(user, UserDto.class);
-    }
-
-    private User getUserFromAuth() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -101,19 +101,74 @@
 			"response": []
 		},
 		{
+			"name": "User auth",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userName\": \"user3@user.com\",\r\n    \"password\": \"password3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User refresh",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDA0MDc5NCwiZXhwIjoxNzE2NjMyNzk0fQ.y5IyIlRFlNd_KeEj6Pxk9iahXYlam2AMlOV0NpkgGXQ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/token",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "create car1",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password1",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user1@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIxQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5NzI3LCJleHAiOjE3MTQwNDAwMjd9.7bGIM-BSTvxrP88Z86Zuhd37LkE1gZqrg2b_crkt9OE",
 							"type": "string"
 						}
 					]
@@ -157,16 +212,11 @@
 			"name": "create car2",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIzQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5NzY5LCJleHAiOjE3MTQwNDAwNjl9.cdjHYc8strCRd_aTDu9AkcKxx31AvNQ1chXZb5Al6f8",
 							"type": "string"
 						}
 					]
@@ -209,16 +259,11 @@
 			"name": "create car3",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIzQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5NzY5LCJleHAiOjE3MTQwNDAwNjl9.cdjHYc8strCRd_aTDu9AkcKxx31AvNQ1chXZb5Al6f8",
 							"type": "string"
 						}
 					]
@@ -261,16 +306,11 @@
 			"name": "update user1",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password1",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user1@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyMUB1c2VyLmNvbSIsImlhdCI6MTcxNDAzOTg1NywiZXhwIjoxNzE0MDQwMTU3fQ.P7hQR0S7cTAnPEMqle4Aq6jk5aJOLZ9SFBdDEXmdz2E",
 							"type": "string"
 						}
 					]
@@ -308,16 +348,11 @@
 			"name": "update user2",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password2",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user2@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5ODg3LCJleHAiOjE3MTQwNDAxODd9.B4pjPHMcyb4ehYdmADDZKK6Pc5KLFXjiouhHdS9-bqU",
 							"type": "string"
 						}
 					]
@@ -355,16 +390,11 @@
 			"name": "get user by id",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5ODg3LCJleHAiOjE3MTQwNDAxODd9.B4pjPHMcyb4ehYdmADDZKK6Pc5KLFXjiouhHdS9-bqU",
 							"type": "string"
 						}
 					]
@@ -399,16 +429,11 @@
 			"name": "delete user by id",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password4",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user4@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5ODg3LCJleHAiOjE3MTQwNDAxODd9.B4pjPHMcyb4ehYdmADDZKK6Pc5KLFXjiouhHdS9-bqU",
 							"type": "string"
 						}
 					]
@@ -442,16 +467,11 @@
 			"name": "get car by id",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDM5ODg3LCJleHAiOjE3MTQwNDAxODd9.B4pjPHMcyb4ehYdmADDZKK6Pc5KLFXjiouhHdS9-bqU",
 							"type": "string"
 						}
 					]
@@ -486,16 +506,11 @@
 			"name": "get owner cars",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDAzOTk5OSwiZXhwIjoxNzE0MDQwMjk5fQ.ra9OQTlMckWbRMzdsS39aOlT3CE0lrlfPq_e0XW4edU",
 							"type": "string"
 						}
 					]
@@ -557,7 +572,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/search?startRent=2024-12-26&endRent=2024-12-30",
+					"raw": "{{baseUrl}}/cars/search?text=au&startRent=2024-12-26&endRent=2024-12-30",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -568,8 +583,7 @@
 					"query": [
 						{
 							"key": "text",
-							"value": "bla",
-							"disabled": true
+							"value": "au"
 						},
 						{
 							"key": "startRent",
@@ -588,16 +602,11 @@
 			"name": "delete car by id",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDAzOTk5OSwiZXhwIjoxNzE0MDQwMjk5fQ.ra9OQTlMckWbRMzdsS39aOlT3CE0lrlfPq_e0XW4edU",
 							"type": "string"
 						}
 					]
@@ -616,13 +625,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/3",
+					"raw": "{{baseUrl}}/cars/4",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"3"
+						"4"
 					]
 				}
 			},
@@ -632,16 +641,11 @@
 			"name": "create booking",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password2",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user2@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDQwMTA1LCJleHAiOjE3MTQwNDA0MDV9.Y_vKUSHpM6OW3MYITp4yekj_4_3MRcmUQdfCvZM1ErM",
 							"type": "string"
 						}
 					]
@@ -661,7 +665,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"carId\": \"4\",\r\n    \"startRent\": \"2024-07-15\",\r\n    \"durationRentInDays\": 5\r\n}"
+					"raw": "{\r\n    \"carId\": \"3\",\r\n    \"startRent\": \"2024-08-15\",\r\n    \"durationRentInDays\": 15\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/booking",
@@ -678,6 +682,16 @@
 		{
 			"name": "update booking status",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyMUB1c2VyLmNvbSIsImlhdCI6MTcxNDA0MDE1OSwiZXhwIjoxNzE0MDQwNDU5fQ.ffQr3FDfaYOTu66kxYJfFAT6GD1pOsZZkz0fNiY2dBg",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [
 					{
@@ -719,16 +733,11 @@
 			"name": "get booking by id",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password1",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user1@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDA0MDI1MywiZXhwIjoxNzE0MDQwNTUzfQ.EJINv41wzRJY3L8ZjXXVG2C7_C_BUX73-3vv76CA5T0",
 							"type": "string"
 						}
 					]
@@ -747,13 +756,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/booking/1",
+					"raw": "{{baseUrl}}/booking/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"booking",
-						"1"
+						"3"
 					]
 				}
 			},
@@ -763,16 +772,11 @@
 			"name": "get user bookings",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password2",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user2@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDQwNDcxLCJleHAiOjE3MTQwNDA3NzF9.NzKfkCsh9C3LGgTlpSWgZSBLc-QlszDWVEPOawurwt0",
 							"type": "string"
 						}
 					]
@@ -791,7 +795,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/booking?status=REJECTED ",
+					"raw": "{{baseUrl}}/booking?status=APPROVED",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -801,8 +805,8 @@
 					"query": [
 						{
 							"key": "status",
-							"value": "REJECTED ",
-							"description": "APPROVED, REJECTED or WAITING"
+							"value": "APPROVED",
+							"description": "WAITING, APPROVED, REJECTED, FINISHED"
 						}
 					]
 				}
@@ -813,16 +817,11 @@
 			"name": "get owner bookings",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password3",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user3@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDA0MDU1NywiZXhwIjoxNzE0MDQwODU3fQ.R8xN4R7tUzydWEopDEmgXwGPhnjUuH-5ZNK_LzWEowE",
 							"type": "string"
 						}
 					]
@@ -841,7 +840,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/booking/owner?status=WAITING",
+					"raw": "{{baseUrl}}/booking/owner?status=REJECTED",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -852,8 +851,8 @@
 					"query": [
 						{
 							"key": "status",
-							"value": "WAITING",
-							"description": "APPROVED, REJECTED or WAITING"
+							"value": "REJECTED",
+							"description": "WAITING, APPROVED, REJECTED, FINISHED"
 						}
 					]
 				}
@@ -864,16 +863,11 @@
 			"name": "add review",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password2",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user2@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJVU0VSIl0sInN1YiI6InVzZXIyQHVzZXIuY29tIiwiaWF0IjoxNzE0MDQwNjkyLCJleHAiOjE3MTQwNDA5OTJ9.ShawF3TfiuUN4M-_Rt0sn8st2wB8MdFcHIW6xgseA0s",
 							"type": "string"
 						}
 					]
@@ -896,13 +890,13 @@
 					"raw": "{\r\n    \"text\": \"Аудюха бомба!\"\r\n}"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/cars/4/review",
+					"raw": "{{baseUrl}}/cars/3/review",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"4",
+						"3",
 						"review"
 					],
 					"query": [
@@ -933,13 +927,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/cars/4/review?page=0&size=3",
+					"raw": "{{baseUrl}}/cars/3/review?page=0&size=3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"4",
+						"3",
 						"review"
 					],
 					"query": [
@@ -960,16 +954,11 @@
 			"name": "update price",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "password1",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "user1@user.com",
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJPV05FUiJdLCJzdWIiOiJ1c2VyM0B1c2VyLmNvbSIsImlhdCI6MTcxNDA0MDc5NCwiZXhwIjoxNzE0MDQxMDk0fQ.wZ-ozdRITNqO2EeeFveIGlA1CRCNJ9K3S_nrSTeftMo",
 							"type": "string"
 						}
 					]
@@ -989,16 +978,16 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pricePerDay\": \"1500\"\r\n}"
+					"raw": "{\r\n    \"pricePerDay\": \"3600\"\r\n}"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/cars/1",
+					"raw": "{{baseUrl}}/cars/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"cars",
-						"1"
+						"3"
 					]
 				}
 			},

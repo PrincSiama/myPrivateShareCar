@@ -14,9 +14,9 @@ import myPrivateShareCar.repository.BookingRepository;
 import myPrivateShareCar.repository.CarRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,15 +26,16 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final CarRepository carRepository;
     private final BookingRepository bookingRepository;
+    private final UserPrincipalService userPrincipalService;
     private final ModelMapper mapper;
 
     @Override
-    public BookingDto create(CreateBookingDto createBookingDto) {
+    public BookingDto create(CreateBookingDto createBookingDto, Principal principal) {
         Car car = carRepository.findById(createBookingDto.getCarId())
                 .orElseThrow(() -> new NotFoundException("Невозможно создать бронирование. " +
                         "Автомобиль с id " + createBookingDto.getCarId() + " не найден"));
 
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getDriverLicense().getSeries() == null) {
             throw new NotCreatedException("Невозможно создать бронирование автомобиля." +
                     " У пользователь с id " + user.getId() + " отсутствует информация о водительском удостоверении");
@@ -50,14 +51,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto changeStatus(int bookingId, BookingStatus status) {
+    public BookingDto changeStatus(int bookingId, BookingStatus status, Principal principal) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
                         "Бронирование с id " + bookingId + " не найдено"));
         Car car = carRepository.findById(booking.getCar().getId())
                 .orElseThrow(() -> new NotFoundException("Невозможно подтвердить бронирование. " +
                         "Автомобиль с id " + booking.getCar().getId() + " не найден"));
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getId() == car.getOwnerId()) {
             booking.setBookingStatus(status);
             return mapper.map(bookingRepository.save(booking), BookingDto.class);
@@ -68,11 +69,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingById(int bookingId) {
+    public BookingDto getBookingById(int bookingId, Principal principal) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Невозможно получить информацию о бронировании. " +
                         "Бронирование с id " + bookingId + " не найдено"));
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getId() == booking.getUser().getId() || user.getId() == booking.getCar().getOwnerId()) {
             return mapper.map(booking, BookingDto.class);
         }
@@ -81,9 +82,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserBookings(BookingStatus status) {
+    public List<BookingDto> getUserBookings(BookingStatus status, Principal principal) {
         List<Booking> bookings;
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (status == null) {
             bookings = bookingRepository.findByUser_IdOrderByStartRentAsc(user.getId());
         } else {
@@ -95,9 +96,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getOwnerBookings(BookingStatus status) {
+    public List<BookingDto> getOwnerBookings(BookingStatus status, Principal principal) {
         List<Booking> bookings;
-        User user = getUserFromAuth();
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         if (!carRepository.findByOwnerId(user.getId(), Pageable.unpaged()).isEmpty()) {
             if (status == null) {
                 bookings = bookingRepository.findAllByCar_OwnerIdOrderByStartRentAsc(user.getId());
@@ -111,9 +112,5 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookings.stream()
                 .map(booking -> mapper.map(booking, BookingDto.class)).collect(Collectors.toList());
-    }
-
-    private User getUserFromAuth() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

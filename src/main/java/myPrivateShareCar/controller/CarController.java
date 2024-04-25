@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,13 +24,15 @@ public class CarController {
     private final CarService carService;
 
     @PostMapping
-    public Car create(@RequestBody @Valid CreateCarDto createCarDto) {
-        return carService.create(createCarDto);
+    public Car create(@RequestBody @Valid CreateCarDto createCarDto,
+                      Principal principal) {
+        return carService.create(createCarDto, principal);
     }
 
     @DeleteMapping("/{carId}")
-    public void delete(@PathVariable int carId) {
-        carService.delete(carId);
+    public void delete(@PathVariable int carId,
+                       Principal principal) {
+        carService.delete(carId, principal);
     }
 
     @GetMapping("/{carId}")
@@ -39,8 +42,9 @@ public class CarController {
 
     @GetMapping
     public List<CarDto> getOwnerCars(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                     @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        return carService.getOwnerCars(PageRequest.of(page, size));
+                                     @RequestParam(value = "size", required = false, defaultValue = "5") int size,
+                                     Principal principal) {
+        return carService.getOwnerCars(PageRequest.of(page, size), principal);
     }
 
     @GetMapping("/search")
@@ -56,8 +60,9 @@ public class CarController {
 
     @PutMapping("/{carId}")
     public void updatePrice(@RequestBody @Valid PriceDto priceDto,
-                            @PathVariable int carId) {
-        carService.updatePrice(carId, priceDto.getPricePerDay());
+                            @PathVariable int carId,
+                            Principal principal) {
+        carService.updatePrice(carId, priceDto.getPricePerDay(), principal);
     }
 
 }

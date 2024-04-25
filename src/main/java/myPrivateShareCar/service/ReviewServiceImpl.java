@@ -12,9 +12,9 @@ import myPrivateShareCar.repository.CarRepository;
 import myPrivateShareCar.repository.ReviewRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +25,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
     private final CarRepository carRepository;
+    private final UserPrincipalService userPrincipalService;
     private final ModelMapper mapper;
 
     @Override
@@ -38,8 +39,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDto addReview(int carId, String text) {
-        User user = getUserFromAuth();
+    public ReviewDto addReview(int carId, String text, Principal principal) {
+        User user = userPrincipalService.getUserFromPrincipal(principal);
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new NotFoundException("Невозможно добавить отзыв пользователя с id " + user.getId() +
                         " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
@@ -53,9 +54,5 @@ public class ReviewServiceImpl implements ReviewService {
                     " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
                     " бронирования для данного автомобиля");
         }
-    }
-
-    private User getUserFromAuth() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
