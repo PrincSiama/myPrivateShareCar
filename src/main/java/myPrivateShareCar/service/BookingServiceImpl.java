@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
                         "Автомобиль с id " + createBookingDto.getCarId() + " не найден"));
 
         User user = userPrincipalService.getUserFromPrincipal(principal);
-        if (user.getDriverLicense().getSeries() == null) {
+        if (user.getDriverLicense() == null || user.getDriverLicense().getSeries() == null) {
             throw new NotCreatedException("Невозможно создать бронирование автомобиля." +
                     " У пользователь с id " + user.getId() + " отсутствует информация о водительском удостоверении");
         }

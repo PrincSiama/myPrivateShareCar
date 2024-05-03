@@ -53,6 +53,10 @@ public class CarServiceImpl implements CarService {
         User user = userPrincipalService.getUserFromPrincipal(principal);
         if (user.getId() == car.getOwnerId()) {
             carRepository.deleteById(carId);
+            if (carRepository.findByOwnerId(user.getId(), Pageable.unpaged()).isEmpty()) {
+                user.setRole(Role.USER);
+                userRepository.save(user);
+            }
         } else {
             throw new PermissionDeniedException("Невозможно удалить автомобиль с id " + carId +
                     ". Удалить может только владелец. Текуший пользователь не является владельцем" +

@@ -1,4 +1,3 @@
-/*
 package myPrivateShareCar.repository;
 
 import myPrivateShareCar.dto.CreateUserDto;
@@ -14,7 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,21 +26,26 @@ class BookingRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User owner, user;
-    private Car car1, car2, car3;
+    private User owner;
+    private User user;
+    private Car car1;
+    private Car car2;
+    private Car car3;
 
     @BeforeEach
     public void createUsersAndCars() {
         CreateUserDto createOwnerDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
         owner = new ModelMapper().map(createOwnerDto, User.class);
         owner.setRegistrationDate(LocalDate.now());
         userRepository.save(owner);
 
         CreateUserDto createUserDto = new CreateUserDto("Пётр", "Петров", "petr@petrov.ru",
                 LocalDate.of(2005, 5, 5), new Passport("2345", "456789",
-                LocalDate.of(2019, 8, 3), "МВД №5"), "password2");
+                LocalDate.of(2019, 8, 3), "МВД №5"),
+                null, "password2");
         user = new ModelMapper().map(createUserDto, User.class);
         user.setRegistrationDate(LocalDate.now());
         userRepository.save(user);
@@ -76,7 +79,7 @@ class BookingRepositoryTest {
         bookingRepository.save(booking2);
 
         List<Integer> bookingsIdList = bookingRepository.findByUser_IdOrderByStartRentAsc(user.getId())
-                .stream().map(Booking::getId).collect(Collectors.toList());
+                .stream().map(Booking::getId).toList();
 
         assertEquals(2, bookingsIdList.size());
 
@@ -159,4 +162,4 @@ class BookingRepositoryTest {
                 LocalDate.now().plusDays(9), LocalDate.now().plusDays(15));
         assertEquals(1, bookingList5.size());
     }
-}*/
+}

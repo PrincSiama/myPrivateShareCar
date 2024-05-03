@@ -2,6 +2,7 @@ package myPrivateShareCar.service;
 
 import lombok.AllArgsConstructor;
 import myPrivateShareCar.dto.ReviewDto;
+import myPrivateShareCar.exception.NotCreatedException;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.model.BookingStatus;
 import myPrivateShareCar.model.Car;
@@ -42,15 +43,14 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDto addReview(int carId, String text, Principal principal) {
         User user = userPrincipalService.getUserFromPrincipal(principal);
         Car car = carRepository.findById(carId)
-                .orElseThrow(() -> new NotFoundException("Невозможно добавить отзыв пользователя с id " + user.getId() +
-                        " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
-                        " бронирования для данного автомобиля"));
+                .orElseThrow(() -> new NotFoundException("Невозможно добавить отзыв. Автомобиль с id " + carId +
+                        " не найден"));
 
         if (!bookingRepository.findAllByUserIdAndCarIdAndBookingStatusIn(user.getId(), carId,
                 List.of(BookingStatus.APPROVED, BookingStatus.FINISHED)).isEmpty()) {
             return mapper.map(reviewRepository.save(new Review(car, user, text, LocalDate.now())), ReviewDto.class);
         } else {
-            throw new NotFoundException("Невозможно добавить отзыв пользователя с id " + user.getId() +
+            throw new NotCreatedException("Невозможно добавить отзыв пользователя с id " + user.getId() +
                     " к автомобилю с id " + carId + ". У пользователя отсутствуют подтвержденные или завершенные" +
                     " бронирования для данного автомобиля");
         }

@@ -1,4 +1,3 @@
-/*
 package myPrivateShareCar.repository;
 
 import myPrivateShareCar.dto.CreateCarDto;
@@ -28,7 +27,8 @@ class CarRepositoryTest {
     public void findByOwnerIdTest() {
         int customOwnerId = 5;
         CreateCarDto createCarDto = new CreateCarDto("BMW", "530",
-                2019, "white", "1277 507800", "А111АА147");
+                2019, "white", "1277 507800",
+                "А111АА147", 2500);
         Car car = mapper.map(createCarDto, Car.class);
         car.setOwnerId(customOwnerId);
 
@@ -58,15 +58,18 @@ class CarRepositoryTest {
     public void testFindByOwnerIdWithTwoCar() {
         int customOwnerId = 5;
         CreateCarDto createCarDto1 = new CreateCarDto("BMW", "530",
-                2019, "white", "1277 507800", "А111АА147");
+                2019, "white", "1277 507800",
+                "А111АА147", 2500);
         Car car1 = mapper.map(createCarDto1, Car.class);
         car1.setOwnerId(customOwnerId);
         CreateCarDto createCarDto2 = new CreateCarDto("AUDI", "A6",
-                2020, "red", "1344 168003", "А006АА47");
+                2020, "red", "1344 168003",
+                "А006АА47", 3000);
         Car car2 = mapper.map(createCarDto2, Car.class);
         car2.setOwnerId(customOwnerId);
         CreateCarDto createCarDto3 = new CreateCarDto("LADA", "2106",
-                1995, "green", "0418 120087", "В210АХ06");
+                1995, "green", "0418 120087",
+                "В210АХ06", 500);
         Car car3 = mapper.map(createCarDto3, Car.class);
         car3.setOwnerId(3);
 
@@ -84,4 +87,3 @@ class CarRepositoryTest {
     }
 }
 
-*/

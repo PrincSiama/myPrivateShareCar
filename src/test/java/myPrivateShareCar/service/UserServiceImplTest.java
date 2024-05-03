@@ -1,20 +1,18 @@
-/*
 package myPrivateShareCar.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import myPrivateShareCar.dto.CreateUserDto;
+import myPrivateShareCar.dto.FullUserDto;
 import myPrivateShareCar.dto.UserDto;
 import myPrivateShareCar.exception.NotFoundException;
 import myPrivateShareCar.exception.NotUpdatedException;
 import myPrivateShareCar.model.Passport;
+import myPrivateShareCar.model.Role;
 import myPrivateShareCar.model.User;
 import myPrivateShareCar.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,16 +26,20 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private UserService userService;
+    @Mock
+    private UserPrincipalService userPrincipalService;
     private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -46,7 +48,8 @@ class UserServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        userService = new UserServiceImpl(userRepository, modelMapper, objectMapper, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, userPrincipalService,
+                modelMapper, objectMapper, passwordEncoder);
     }
 
     @Test
@@ -54,22 +57,20 @@ class UserServiceImplTest {
     public void createUserTest() {
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
 
-        User testUser = modelMapper.map(createUserDto, User.class);
-        testUser.setRegistrationDate(LocalDate.now());
+        when(userRepository.save(Mockito.any(User.class))).then(returnsFirstArg());
 
-        when(userRepository.save(Mockito.any(User.class))).thenReturn(testUser);
-
-        User user = userService.create(createUserDto);
+        FullUserDto user = userService.create(createUserDto);
 
         verify(userRepository).save(Mockito.any(User.class));
         assertNotNull(user);
-        assertEquals(testUser.getFirstname(), user.getFirstname());
-        assertEquals(testUser.getLastname(), user.getLastname());
-        assertEquals(testUser.getEmail(), user.getEmail());
-        assertEquals(testUser.getBirthday(), user.getBirthday());
-        assertEquals(testUser.getRegistrationDate(), user.getRegistrationDate());
+        assertEquals(LocalDate.now(), user.getRegistrationDate());
+        assertEquals(Role.USER, user.getRole());
+        assertEquals(createUserDto.getPassport().getNumber(), user.getPassport().getNumber());
+        assertEquals(createUserDto.getEmail(), user.getEmail());
+        assertNull(user.getDriverLicense());
     }
 
     @Test
@@ -77,83 +78,115 @@ class UserServiceImplTest {
     public void updateUserTest() {
         objectMapper.findAndRegisterModules();
         int customUserId = 22;
+        String updateName = "Пётр";
 
-        User testUser = new User();
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
+
+        User testUser = modelMapper.map(createUserDto, User.class);
         testUser.setId(customUserId);
-        testUser.setFirstname("Ivan");
-        testUser.setLastname("Ivanov");
-        testUser.setEmail("ivan@email.ru");
-        testUser.setBirthday(LocalDate.of(2000, 10, 1));
-        testUser.setRegistrationDate(LocalDate.of(2023, 11, 20));
 
-        when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));
+        Principal mockPrincipal = Mockito.mock(Principal.class);
+        when(userPrincipalService.getUserFromPrincipal(Mockito.any(Principal.class))).thenReturn(testUser);
 
-        User updateUser;
+        when(userRepository.save(Mockito.any(User.class))).then(returnsFirstArg());
+
+        FullUserDto updateUser;
         try {
             JsonPatch jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
-                    new TextNode("Пётр"))));
+                    new TextNode(updateName))));
 
-            JsonNode jsonNode = objectMapper.convertValue(testUser, JsonNode.class);
-            JsonNode patched = jsonPatch.apply(jsonNode);
-            User returnUser = objectMapper.treeToValue(patched, User.class);
-
-            when(userRepository.save(Mockito.any(User.class))).thenReturn(returnUser);
-
-            updateUser = userService.update(customUserId, jsonPatch);
-        } catch (JsonPointerException | JsonPatchException | JsonProcessingException e) {
+            updateUser = userService.update(jsonPatch, mockPrincipal);
+        } catch (JsonPointerException e) {
             throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
         }
         assertNotNull(updateUser);
-        assertEquals("Пётр", updateUser.getFirstname());
-        assertEquals("ivan@email.ru", updateUser.getEmail());
+        assertEquals(updateName, updateUser.getFirstname());
+        assertEquals(createUserDto.getEmail(), updateUser.getEmail());
     }
 
     @Test
     @DisplayName("Обновление несуществующего пользователя")
-    public void updateUserWithNotExistUserTest() {
-        int customUserId = 77;
-        when(userRepository.findById(Mockito.anyInt())).thenThrow(
-                new NotFoundException("Невозможно обновить пользователя. Пользователь с id "
-                        + customUserId + " не найден"));
+    public void updateNonExistUserTest() {
+        objectMapper.findAndRegisterModules();
+        String updateName = "Пётр";
+        Principal mockPrincipal = Mockito.mock(Principal.class);
+        JsonPatch jsonPatch;
 
-        assertThrows(NotFoundException.class, () -> userService.update(customUserId, null));
+        try {
+            jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/firstname"),
+                    new TextNode(updateName))));
+        } catch (JsonPointerException e) {
+            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
+        }
+        assertThrows(NotUpdatedException.class, () -> userService.update(jsonPatch, mockPrincipal));
+    }
+
+    @Test
+    @DisplayName("Обновление пользователя с некорректным JsonPatch")
+    public void incorrectUpdateUserTest() {
+        objectMapper.findAndRegisterModules();
+        int customUserId = 25;
+
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
+        User testUser = modelMapper.map(createUserDto, User.class);
+        testUser.setId(customUserId);
+
+        Principal mockPrincipal = Mockito.mock(Principal.class);
+        when(userPrincipalService.getUserFromPrincipal(Mockito.any(Principal.class))).thenReturn(testUser);
+
+        JsonPatch jsonPatch;
+        try {
+            jsonPatch = new JsonPatch(List.of(new ReplaceOperation(new JsonPointer("/fakeField"),
+                    new TextNode("fakeText"))));
+        } catch (JsonPointerException e) {
+            throw new NotUpdatedException("Невозможно обновить данные пользователя", e);
+        }
+
+        assertThrows(NotUpdatedException.class, () -> userService.update(jsonPatch, mockPrincipal));
     }
 
     @Test
     @DisplayName("Корректное удаление пользователя")
     public void deleteUserTest() {
-        int customUserId = 15;
-        when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
-        doNothing().when(userRepository).deleteById(Mockito.anyInt());
+        int customUserId = 45;
 
-        userService.delete(customUserId);
+        CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
+                LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
 
-        verify(userRepository).deleteById(Mockito.anyInt());
-    }
+        User testUser = modelMapper.map(createUserDto, User.class);
+        testUser.setId(customUserId);
 
-    @Test
-    @DisplayName("Удаление несуществующего пользователя")
-    public void deleteUserWithNotExistUserTest() {
-        int customUserId = 15;
-        when(userRepository.existsById(Mockito.anyInt())).thenThrow(
-                new NotFoundException("Невозможно удалить пользователя. Пользователь с id " + customUserId + " не найден"));
+        Principal mockPrincipal = Mockito.mock(Principal.class);
+        when(userPrincipalService.getUserFromPrincipal(Mockito.any(Principal.class))).thenReturn(testUser);
 
-        assertThrows(NotFoundException.class, () -> userService.delete(customUserId));
+        doNothing().when(userRepository).deleteById(anyInt());
 
-        verify(userRepository, never()).deleteById(Mockito.anyInt());
+        userService.delete(mockPrincipal);
+
+        verify(userRepository).deleteById(anyInt());
     }
 
     @Test
     @DisplayName("Корректное получение пользователя по id")
     public void getUserByIdTest() {
-        int customUserId = 1;
+        int customUserId = 47;
+
         CreateUserDto createUserDto = new CreateUserDto("Иван", "Иванов", "ivan@ivanov.ru",
                 LocalDate.of(2000, 10, 1), new Passport("1234", "123456",
-                LocalDate.of(2014, 5, 15), "МВД №1"), "password1");
+                LocalDate.of(2014, 5, 15), "МВД №1"),
+                null, "password1");
         User testUser = modelMapper.map(createUserDto, User.class);
-        testUser.setRegistrationDate(LocalDate.now());
+        testUser.setId(customUserId);
 
-        when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(testUser));
 
         UserDto userDto = userService.getById(customUserId);
 
@@ -166,11 +199,10 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Получение несуществующего пользователя")
     public void getUserByIdWithNotExistUserTest() {
-        int customUserId = 1;
-        when(userRepository.findById(Mockito.anyInt())).thenThrow(
-                new NotFoundException("Невозможно получить пользователя. Пользователь с id "
-                        + customUserId + " не найден"));
+        int customUserId = 49;
+
+        when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userService.getById(customUserId));
     }
-}*/
+}
