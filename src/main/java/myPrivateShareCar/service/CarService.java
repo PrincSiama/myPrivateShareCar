@@ -11,9 +11,14 @@ import java.util.List;
 
 public interface CarService {
     Car create(CreateCarDto createCarDto, Principal principal);
+
     void delete(int id, Principal principal);
+
     CarDto getById(int id);
+
     List<CarDto> getOwnerCars(Pageable pageable, Principal principal);
+
     List<CarDto> search(String text, LocalDate startRent, LocalDate endRent, Pageable pageable);
+
     void updatePrice(int carId, int pricePerDay, Principal principal);
 }

@@ -19,11 +19,11 @@ public class Review {
     private int reviewId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name="car_id")
+    @JoinColumn(name = "car_id")
     private Car car;
 
     @Column(name = "text")

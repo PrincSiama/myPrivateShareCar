@@ -23,6 +23,7 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     User user;
+
     @BeforeEach
     void setUp() {
         CreateUserDto createUserDto = new CreateUserDto("Пётр", "Петров", "petr@petrov.ru",

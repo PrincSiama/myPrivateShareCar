@@ -12,6 +12,7 @@ import java.security.Principal;
 @AllArgsConstructor
 public class UserPrincipalServiceImpl implements UserPrincipalService {
     private final UserRepository userRepository;
+
     @Override
     public User getUserFromPrincipal(Principal principal) {
         return userRepository.findByEmail(principal.getName()).orElseThrow(

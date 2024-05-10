@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ReviewService {
     ReviewDto addReview(int carId, String text, Principal principal);
+
     List<ReviewDto> getReviewByCar(int carId, Pageable pageable);
 }

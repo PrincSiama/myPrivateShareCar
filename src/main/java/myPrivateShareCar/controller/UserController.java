@@ -17,20 +17,18 @@ import java.security.Principal;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping()
     public FullUserDto create(@RequestBody @Valid CreateUserDto createUserDto) {
         return userService.create(createUserDto);
     }
 
-    @PatchMapping() //todo изменился путь. убрал {id}
-    // todo проверить тесты
+    @PatchMapping()
     public FullUserDto update(@RequestBody @Valid JsonPatch jsonPatch,
                               Principal principal) {
         return userService.update(jsonPatch, principal);
     }
 
-    @DeleteMapping() //todo изменился путь. убрал {id}
-    // todo проверить тесты
+    @DeleteMapping()
     public void delete(Principal principal) {
         userService.delete(principal);
     }
@@ -39,6 +37,4 @@ public class UserController {
     public UserDto getById(@PathVariable int id) {
         return userService.getById(id);
     }
-
-
 }

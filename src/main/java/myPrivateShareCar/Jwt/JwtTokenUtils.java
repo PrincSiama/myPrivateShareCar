@@ -2,7 +2,6 @@ package myPrivateShareCar.Jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,14 +22,12 @@ public class JwtTokenUtils {
     private final int jwtAccessLifeTime;
     private final int jwtRefreshLifeTime;
 
-    public JwtTokenUtils(@Value("${jwt.access.secret}") String accessSecret,
-                         @Value("${jwt.refresh.secret}") String refreshSecret,
-                         @Value("${jwt.access.lifetime}") int jwtAccessLifeTime,
-                         @Value("${jwt.refresh.lifetime}") int jwtRefreshLifeTime) {
-        this.accessKey = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
-        this.refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes(StandardCharsets.UTF_8));
-        this.jwtAccessLifeTime = jwtAccessLifeTime;
-        this.jwtRefreshLifeTime = jwtRefreshLifeTime;
+    public JwtTokenUtils(@Value("${jwt.access.lifetime}") String jwtAccessLifeTime,
+                         @Value("${jwt.refresh.lifetime}") String jwtRefreshLifeTime) {
+        this.accessKey = Jwts.SIG.HS256.key().build();
+        this.refreshKey = Jwts.SIG.HS256.key().build();
+        this.jwtAccessLifeTime = Integer.parseInt(jwtAccessLifeTime);
+        this.jwtRefreshLifeTime = Integer.parseInt(jwtRefreshLifeTime);
     }
 
     public String generateAccessToken(UserDetails userDetails) {
